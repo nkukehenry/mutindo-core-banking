@@ -90,9 +90,7 @@ public class CustomFieldValue extends BaseEntity {
     @Column(name = "validation_error", length = 500)
     private String validationError;
 
-    // Versioning for audit trail
-    @Column(name = "version", nullable = false)
-    private Integer version = 1;
+    // Note: version field inherited from BaseEntity (Long type for optimistic locking)
 
     @Size(max = 500)
     @Column(name = "change_reason", length = 500)
@@ -146,6 +144,11 @@ public class CustomFieldValue extends BaseEntity {
         } else {
             // Convert to string for searching
             this.textValue = value.toString();
+        }
+        
+        // Increment version for optimistic locking (inherited from BaseEntity)
+        if (this.getVersion() != null) {
+            this.setVersion(this.getVersion() + 1);
         }
     }
 

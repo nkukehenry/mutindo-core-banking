@@ -178,7 +178,7 @@ public class CustomFieldController {
                             .dataType("TEXT")
                             .value(entry.getValue())
                             .isValid(true)
-                            .version(1)
+                            .version(1L)
                             .updatedAt(LocalDateTime.now())
                             .build())
                     .toList();
@@ -426,7 +426,7 @@ public class CustomFieldController {
         private Object value;
         private Boolean isValid;
         private String validationError;
-        private Integer version;
+        private Long version;
         private String changeReason;
         private LocalDateTime updatedAt;
     }
