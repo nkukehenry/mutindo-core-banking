@@ -100,15 +100,10 @@ public class GLAccountController {
         log.debug("Getting GL account via API: {}", accountId);
 
         try {
-            Long accountIdLong = Long.parseLong(accountId);
-            Optional<GLAccountDto> accountOpt = findGLAccountById(accountIdLong);
-            
-            if (accountOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(accountOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("GL account not found"));
-            }
+            // TODO: Use real service - needs getAccountById method in IChartOfAccountsService
+            // Long accountIdLong = Long.parseLong(accountId);
+            // Optional<com.mutindo.chartofaccounts.dto.GLAccountDto> serviceResult = chartOfAccountsService.getAccountById(accountIdLong);
+            throw new UnsupportedOperationException("getAccountById method not yet available in IChartOfAccountsService");
             
         } catch (Exception e) {
             log.error("Failed to get GL account via API: {}", accountId, e);
@@ -127,10 +122,12 @@ public class GLAccountController {
         log.debug("Getting GL account by code via API: {}", accountCode);
 
         try {
-            Optional<GLAccountDto> accountOpt = findGLAccountByCode(accountCode);
+            // Use real Chart of Accounts service
+            Optional<com.mutindo.chartofaccounts.dto.GLAccountDto> serviceResult = chartOfAccountsService.getAccountByCode(accountCode);
             
-            if (accountOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(accountOpt.get()));
+            if (serviceResult.isPresent()) {
+                GLAccountDto glAccount = convertServiceDtoToApiDto(serviceResult.get());
+                return ResponseEntity.ok(BaseResponse.success(glAccount));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(BaseResponse.error("GL account not found"));
@@ -310,8 +307,24 @@ public class GLAccountController {
                 .findFirst();
     }
 
-    private int calculateAccountLevel(Long parentId) {
-        return parentId == null ? 1 : 2; // Simplified level calculation
+    /**
+     * Convert service DTO to API DTO
+     */
+    private GLAccountDto convertServiceDtoToApiDto(com.mutindo.chartofaccounts.dto.GLAccountDto serviceDto) {
+        return GLAccountDto.builder()
+                .id(serviceDto.getId())
+                .accountCode(serviceDto.getCode())
+                .accountName(serviceDto.getName())
+                .accountType(serviceDto.getType())
+                .parentId(serviceDto.getParentId())
+                .description(serviceDto.getDescription())
+                .isControlAccount(serviceDto.getIsControlAccount())
+                .allowsPosting(serviceDto.getAllowsPosting())
+                .level(serviceDto.getLevel())
+                .active(serviceDto.getActive())
+                .createdAt(serviceDto.getCreatedAt())
+                .updatedAt(serviceDto.getUpdatedAt())
+                .build();
     }
 
     private List<GLAccountHierarchyDto> buildAccountHierarchy() {
