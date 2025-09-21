@@ -192,7 +192,13 @@ public class GLAccountController {
         log.debug("Getting chart of accounts via API - Type: {}, Active: {}", accountType, activeOnly);
 
         try {
-            List<GLAccountHierarchyDto> hierarchy = buildAccountHierarchy();
+            // Use real Chart of Accounts service
+            List<com.mutindo.chartofaccounts.dto.GLAccountHierarchyDto> serviceHierarchy = chartOfAccountsService.getChartOfAccountsHierarchy();
+            
+            // Convert service DTOs to API DTOs
+            List<GLAccountHierarchyDto> hierarchy = serviceHierarchy.stream()
+                    .map(this::convertHierarchyDtoToApiDto)
+                    .toList();
             
             log.debug("Retrieved {} GL accounts in hierarchy via API", hierarchy.size());
             return ResponseEntity.ok(BaseResponse.success(hierarchy));
@@ -324,6 +330,24 @@ public class GLAccountController {
                 .active(serviceDto.getActive())
                 .createdAt(serviceDto.getCreatedAt())
                 .updatedAt(serviceDto.getUpdatedAt())
+                .build();
+    }
+
+    /**
+     * Convert service hierarchy DTO to API hierarchy DTO
+     */
+    private GLAccountHierarchyDto convertHierarchyDtoToApiDto(com.mutindo.chartofaccounts.dto.GLAccountHierarchyDto serviceDto) {
+        return GLAccountHierarchyDto.builder()
+                .id(serviceDto.getId())
+                .accountCode(serviceDto.getCode())
+                .accountName(serviceDto.getName())
+                .accountType(serviceDto.getType())
+                .level(serviceDto.getLevel())
+                .balance(serviceDto.getBalance())
+                .children(serviceDto.getChildren() != null ? 
+                    serviceDto.getChildren().stream()
+                        .map(this::convertHierarchyDtoToApiDto)
+                        .toList() : null)
                 .build();
     }
 
