@@ -93,15 +93,10 @@ public class UserController {
         log.debug("Getting user via API: {}", userId);
 
         try {
-            Long userIdLong = Long.parseLong(userId);
-            Optional<UserDto> userOpt = findUserById(userIdLong);
-            
-            if (userOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(userOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("User not found"));
-            }
+            // TODO: Replace with real service call
+            // Long userIdLong = Long.parseLong(userId);
+            // Optional<UserDto> userOpt = userService.getUserById(userIdLong);
+            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get user via API: {}", userId, e);
@@ -194,19 +189,9 @@ public class UserController {
                 userType, branchId, active);
 
         try {
-            List<UserDto> users = getMockUsers();
-            PaginatedResponse<UserDto> response = PaginatedResponse.<UserDto>builder()
-                    .content(users)
-                    .totalElements((long) users.size())
-                    .totalPages(1)
-                    .size(users.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            log.debug("Found {} users via API", users.size());
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<UserDto> response = userService.getAllUsers(userType, branchId, active, pageable);
+            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get users via API", e);
@@ -231,18 +216,9 @@ public class UserController {
         log.debug("Searching users via API - Term: {}", searchTerm);
 
         try {
-            List<UserDto> users = getMockUsers();
-            PaginatedResponse<UserDto> response = PaginatedResponse.<UserDto>builder()
-                    .content(users)
-                    .totalElements((long) users.size())
-                    .totalPages(1)
-                    .size(users.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<UserDto> response = userService.searchUsers(searchTerm, userType, branchId, active, pageable);
+            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to search users via API", e);
@@ -336,87 +312,7 @@ public class UserController {
         }
     }
 
-    // Private helper methods (temporary until real service is available)
-
-    private Optional<UserDto> findUserById(Long userId) {
-        return getMockUsers().stream()
-                .filter(user -> user.getId().equals(userId))
-                .findFirst();
-    }
-
-    private Optional<UserDto> findUserByUsername(String username) {
-        return getMockUsers().stream()
-                .filter(user -> user.getUsername().equals(username))
-                .findFirst();
-    }
-
-    private List<UserDto> getMockUsers() {
-        return List.of(
-                UserDto.builder()
-                        .id(1L)
-                        .username("admin")
-                        .email("admin@mutindo.com")
-                        .firstName("System")
-                        .lastName("Administrator")
-                        .phone("+256-700-000001")
-                        .userType(UserType.SUPER_ADMIN)
-                        .branchId(null)
-                        .supervisorId(null)
-                        .department("IT")
-                        .position("System Administrator")
-                        .employeeId("EMP001")
-                        .active(true)
-                        .emailVerified(true)
-                        .phoneVerified(true)
-                        .mfaEnabled(true)
-                        .mustChangePassword(false)
-                        .failedLoginAttempts(0)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build(),
-                UserDto.builder()
-                        .id(2L)
-                        .username("manager1")
-                        .email("manager1@mutindo.com")
-                        .firstName("John")
-                        .lastName("Manager")
-                        .phone("+256-700-000002")
-                        .userType(UserType.BRANCH_MANAGER)
-                        .branchId(2L)
-                        .supervisorId(1L)
-                        .department("Operations")
-                        .position("Branch Manager")
-                        .employeeId("EMP002")
-                        .active(true)
-                        .emailVerified(true)
-                        .phoneVerified(true)
-                        .mfaEnabled(false)
-                        .mustChangePassword(false)
-                        .failedLoginAttempts(0)
-                        .createdAt(LocalDateTime.now().minusMonths(6))
-                        .build(),
-                UserDto.builder()
-                        .id(3L)
-                        .username("teller1")
-                        .email("teller1@mutindo.com")
-                        .firstName("Jane")
-                        .lastName("Teller")
-                        .phone("+256-700-000003")
-                        .userType(UserType.TELLER)
-                        .branchId(2L)
-                        .supervisorId(2L)
-                        .department("Customer Service")
-                        .position("Senior Teller")
-                        .employeeId("EMP003")
-                        .active(true)
-                        .emailVerified(true)
-                        .phoneVerified(false)
-                        .mfaEnabled(false)
-                        .mustChangePassword(false)
-                        .failedLoginAttempts(0)
-                        .createdAt(LocalDateTime.now().minusMonths(3))
-                        .build()
-        );
-    }
+    // All mock data removed - real user service implementation required
 
     // DTOs for User operations
 
