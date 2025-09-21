@@ -57,15 +57,27 @@ public class GLAccountController {
                     .accountType(request.getAccountType())
                     .parentId(request.getParentId())
                     .description(request.getDescription())
-                    .normalBalance(request.getNormalBalance())
                     .isControlAccount(request.getIsControlAccount())
                     .allowsPosting(request.getAllowsPosting())
                     .build();
             
             com.mutindo.chartofaccounts.dto.GLAccountDto serviceResult = chartOfAccountsService.createAccount(serviceRequest);
             
-            // Convert service DTO to API DTO
-            GLAccountDto glAccount = convertToApiDto(serviceResult);
+            // Convert service DTO to API DTO (field mapping)
+            GLAccountDto glAccount = GLAccountDto.builder()
+                    .id(serviceResult.getId())
+                    .accountCode(serviceResult.getCode())
+                    .accountName(serviceResult.getName())
+                    .accountType(serviceResult.getType())
+                    .parentId(serviceResult.getParentId())
+                    .description(serviceResult.getDescription())
+                    .isControlAccount(serviceResult.getIsControlAccount())
+                    .allowsPosting(serviceResult.getAllowsPosting())
+                    .level(serviceResult.getLevel())
+                    .active(serviceResult.getActive())
+                    .createdAt(serviceResult.getCreatedAt())
+                    .updatedAt(serviceResult.getUpdatedAt())
+                    .build();
             
             log.info("GL account created successfully via API: {}", glAccount.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
