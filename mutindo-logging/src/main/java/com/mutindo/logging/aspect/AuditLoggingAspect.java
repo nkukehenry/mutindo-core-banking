@@ -1,6 +1,7 @@
 package com.mutindo.logging.aspect;
 
 import com.mutindo.common.context.BranchContextHolder;
+import com.mutindo.logging.annotation.AuditLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -8,9 +9,11 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
 /**
@@ -24,50 +27,79 @@ public class AuditLoggingAspect {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Before("@annotation(com.annotation.logging.mutindo.AuditLog)")
-    public void logBefore(JoinPoint joinPoint) {
+    @Before("@annotation(auditLog)")
+    public void logBefore(JoinPoint joinPoint, AuditLog auditLog) {
         try {
             String methodName = joinPoint.getSignature().getName();
             String className = joinPoint.getTarget().getClass().getSimpleName();
-            String userId = BranchContextHolder.getCurrentUserId();
-            String branchId = BranchContextHolder.getCurrentBranchId();
-
-            log.info("AUDIT_START - User: {}, Branch: {}, Class: {}, Method: {}, Args: {}",
-                    userId, branchId, className, methodName,
-                    objectMapper.writeValueAsString(joinPoint.getArgs()));
+            Long userId = BranchContextHolder.getCurrentUserId();
+            Long branchId = BranchContextHolder.getCurrentBranchId();
+            
+            // Get enhanced annotation metadata
+            String action = !auditLog.action().isEmpty() ? auditLog.action() : auditLog.value();
+            String entity = auditLog.entity();
+            String description = auditLog.description();
+            
+            String logMessage = String.format("AUDIT_START - Action: %s, Entity: %s, User: %s, Branch: %s, Class: %s, Method: %s", 
+                    action, entity, userId, branchId, className, methodName);
+            
+            if (!description.isEmpty()) {
+                logMessage += ", Description: " + description;
+            }
+            
+            // Log parameters only if not sensitive data
+            if (auditLog.includeSensitiveData()) {
+                logMessage += ", Args: " + objectMapper.writeValueAsString(joinPoint.getArgs());
+            }
+            
+            log.info(logMessage);
 
         } catch (Exception e) {
             log.warn("Failed to log audit information", e);
         }
     }
 
-    @AfterReturning(pointcut = "@annotation(com.annotation.logging.mutindo.AuditLog)", returning = "result")
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
+    @AfterReturning(pointcut = "@annotation(auditLog)", returning = "result")
+    public void logAfterReturning(JoinPoint joinPoint, AuditLog auditLog, Object result) {
         try {
             String methodName = joinPoint.getSignature().getName();
             String className = joinPoint.getTarget().getClass().getSimpleName();
-            String userId = BranchContextHolder.getCurrentUserId();
-            String branchId = BranchContextHolder.getCurrentBranchId();
-
-            log.info("AUDIT_SUCCESS - User: {}, Branch: {}, Class: {}, Method: {}, Result: {}",
-                    userId, branchId, className, methodName,
-                    objectMapper.writeValueAsString(result));
+            Long userId = BranchContextHolder.getCurrentUserId();
+            Long branchId = BranchContextHolder.getCurrentBranchId();
+            
+            // Get enhanced annotation metadata
+            String action = !auditLog.action().isEmpty() ? auditLog.action() : auditLog.value();
+            String entity = auditLog.entity();
+            
+            String logMessage = String.format("AUDIT_SUCCESS - Action: %s, Entity: %s, User: %s, Branch: %s, Class: %s, Method: %s", 
+                    action, entity, userId, branchId, className, methodName);
+            
+            // Log result only if not sensitive data
+            if (auditLog.includeSensitiveData()) {
+                logMessage += ", Result: " + objectMapper.writeValueAsString(result);
+            }
+            
+            log.info(logMessage);
 
         } catch (Exception e) {
             log.warn("Failed to log audit information", e);
         }
     }
 
-    @AfterThrowing(pointcut = "@annotation(com.annotation.logging.mutindo.AuditLog)", throwing = "exception")
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
+    @AfterThrowing(pointcut = "@annotation(auditLog)", throwing = "exception")
+    public void logAfterThrowing(JoinPoint joinPoint, AuditLog auditLog, Throwable exception) {
         try {
             String methodName = joinPoint.getSignature().getName();
             String className = joinPoint.getTarget().getClass().getSimpleName();
-            String userId = BranchContextHolder.getCurrentUserId();
-            String branchId = BranchContextHolder.getCurrentBranchId();
-
-            log.error("AUDIT_ERROR - User: {}, Branch: {}, Class: {}, Method: {}, Error: {}",
-                    userId, branchId, className, methodName, exception.getMessage(), exception);
+            Long userId = BranchContextHolder.getCurrentUserId();
+            Long branchId = BranchContextHolder.getCurrentBranchId();
+            
+            // Get enhanced annotation metadata
+            String action = !auditLog.action().isEmpty() ? auditLog.action() : auditLog.value();
+            String entity = auditLog.entity();
+            
+            log.error("AUDIT_ERROR - Action: {}, Entity: {}, User: {}, Branch: {}, Class: {}, Method: {}, Error: {}",
+                    action, entity, userId, branchId, className, methodName, exception.getMessage(), exception);
 
         } catch (Exception e) {
             log.warn("Failed to log audit information", e);
