@@ -351,77 +351,7 @@ public class GLAccountController {
                 .build();
     }
 
-    private List<GLAccountHierarchyDto> buildAccountHierarchy() {
-        return List.of(
-                GLAccountHierarchyDto.builder()
-                        .id(1L)
-                        .accountCode("1000")
-                        .accountName("ASSETS")
-                        .accountType(GLAccountType.ASSET)
-                        .level(1)
-                        .children(List.of(
-                                GLAccountHierarchyDto.builder()
-                                        .id(2L)
-                                        .accountCode("1010")
-                                        .accountName("Cash at Bank")
-                                        .accountType(GLAccountType.ASSET)
-                                        .level(2)
-                                        .balance(BigDecimal.valueOf(5000000))
-                                        .build()
-                        ))
-                        .build()
-        );
-    }
-
-    private List<GLAccountDto> getMockGLAccounts() {
-        return List.of(
-                GLAccountDto.builder()
-                        .id(1L)
-                        .accountCode("1000")
-                        .accountName("ASSETS")
-                        .accountType(GLAccountType.ASSET)
-                        .parentId(null)
-                        .description("Asset accounts")
-                        .normalBalance("DEBIT")
-                        .isControlAccount(true)
-                        .allowsPosting(false)
-                        .level(1)
-                        .balance(BigDecimal.valueOf(10000000))
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build(),
-                GLAccountDto.builder()
-                        .id(2L)
-                        .accountCode("1010")
-                        .accountName("Cash at Bank")
-                        .accountType(GLAccountType.ASSET)
-                        .parentId(1L)
-                        .description("Bank account balances")
-                        .normalBalance("DEBIT")
-                        .isControlAccount(false)
-                        .allowsPosting(true)
-                        .level(2)
-                        .balance(BigDecimal.valueOf(5000000))
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build(),
-                GLAccountDto.builder()
-                        .id(3L)
-                        .accountCode("2000")
-                        .accountName("LIABILITIES")
-                        .accountType(GLAccountType.LIABILITY)
-                        .parentId(null)
-                        .description("Liability accounts")
-                        .normalBalance("CREDIT")
-                        .isControlAccount(true)
-                        .allowsPosting(false)
-                        .level(1)
-                        .balance(BigDecimal.valueOf(8000000))
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build()
-        );
-    }
+    // All mock data removed - using real Chart of Accounts service
 
     // DTOs for GL Account operations
 
