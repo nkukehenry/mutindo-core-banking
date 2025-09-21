@@ -33,8 +33,8 @@ import java.util.Optional;
 @Tag(name = "Branches", description = "Branch management operations")
 public class BranchController {
 
-    // TODO: Inject IBranchService when available
-    // private final IBranchService branchService;
+    // Service will be injected when IBranchService is implemented
+    // For now, throwing exceptions to indicate real service needed
 
     /**
      * Create new branch
@@ -48,22 +48,9 @@ public class BranchController {
         log.info("Creating branch via API - Name: {} - Code: {}", request.getName(), request.getCode());
 
         try {
-            // TODO: Use real service when available
-            BranchDto branch = BranchDto.builder()
-                    .id(System.currentTimeMillis())
-                    .name(request.getName())
-                    .code(request.getCode())
-                    .address(request.getAddress())
-                    .phone(request.getPhone())
-                    .email(request.getEmail())
-                    .managerName(request.getManagerName())
-                    .active(true)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            
-            log.info("Branch created successfully via API: {}", branch.getId());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(BaseResponse.success(branch, "Branch created successfully"));
+            // TODO: Replace with real service call
+            // BranchDto branch = branchService.createBranch(request);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to create branch via API", e);
@@ -82,16 +69,10 @@ public class BranchController {
         log.debug("Getting branch via API: {}", branchId);
 
         try {
-            // TODO: Use real service when available
-            Long branchIdLong = Long.parseLong(branchId);
-            Optional<BranchDto> branchOpt = findBranchById(branchIdLong);
-            
-            if (branchOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(branchOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("Branch not found"));
-            }
+            // TODO: Replace with real service call
+            // Long branchIdLong = Long.parseLong(branchId);
+            // Optional<BranchDto> branchOpt = branchService.getBranchById(branchIdLong);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get branch via API: {}", branchId, e);
@@ -114,22 +95,10 @@ public class BranchController {
         log.info("Updating branch via API: {}", branchId);
 
         try {
-            // TODO: Use real service when available
-            Long branchIdLong = Long.parseLong(branchId);
-            BranchDto updatedBranch = BranchDto.builder()
-                    .id(branchIdLong)
-                    .name(request.getName())
-                    .code(request.getCode())
-                    .address(request.getAddress())
-                    .phone(request.getPhone())
-                    .email(request.getEmail())
-                    .managerName(request.getManagerName())
-                    .active(request.getActive())
-                    .updatedAt(LocalDateTime.now())
-                    .build();
-            
-            log.info("Branch updated successfully via API: {}", branchId);
-            return ResponseEntity.ok(BaseResponse.success(updatedBranch, "Branch updated successfully"));
+            // TODO: Replace with real service call
+            // Long branchIdLong = Long.parseLong(branchId);
+            // BranchDto updatedBranch = branchService.updateBranch(branchIdLong, request);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to update branch via API: {}", branchId, e);
@@ -151,20 +120,9 @@ public class BranchController {
         log.debug("Getting all branches via API - Active: {}", active);
 
         try {
-            // TODO: Use real service when available
-            List<BranchDto> branches = getMockBranches();
-            PaginatedResponse<BranchDto> response = PaginatedResponse.<BranchDto>builder()
-                    .content(branches)
-                    .totalElements((long) branches.size())
-                    .totalPages(1)
-                    .size(branches.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            log.debug("Found {} branches via API", branches.size());
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<BranchDto> response = branchService.getAllBranches(active, pageable);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get branches via API", e);
@@ -188,19 +146,9 @@ public class BranchController {
         log.debug("Searching branches via API - Term: {}", searchTerm);
 
         try {
-            // TODO: Use real service when available
-            List<BranchDto> branches = getMockBranches();
-            PaginatedResponse<BranchDto> response = PaginatedResponse.<BranchDto>builder()
-                    .content(branches)
-                    .totalElements((long) branches.size())
-                    .totalPages(1)
-                    .size(branches.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<BranchDto> response = branchService.searchBranches(searchTerm, region, active, pageable);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to search branches via API", e);
@@ -222,9 +170,9 @@ public class BranchController {
         log.info("Deactivating branch via API: {} - Reason: {}", branchId, reason);
 
         try {
-            // TODO: Use real service when available
-            log.info("Branch deactivated successfully via API: {}", branchId);
-            return ResponseEntity.ok(BaseResponse.success(null, "Branch deactivated successfully"));
+            // TODO: Replace with real service call
+            // branchService.deactivateBranch(Long.parseLong(branchId), reason);
+            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to deactivate branch via API: {}", branchId, e);
@@ -232,51 +180,7 @@ public class BranchController {
         }
     }
 
-    // Private helper methods (temporary until real service is available)
-
-    private Optional<BranchDto> findBranchById(Long branchId) {
-        return getMockBranches().stream()
-                .filter(branch -> branch.getId().equals(branchId))
-                .findFirst();
-    }
-
-    private List<BranchDto> getMockBranches() {
-        return List.of(
-                BranchDto.builder()
-                        .id(1L)
-                        .name("Head Office")
-                        .code("HO001")
-                        .address("Kampala Central Business District")
-                        .phone("+256-700-123456")
-                        .email("headoffice@mutindo.com")
-                        .managerName("John Manager")
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build(),
-                BranchDto.builder()
-                        .id(2L)
-                        .name("Kampala Main Branch")
-                        .code("KLA001")
-                        .address("Kampala Road, Kampala")
-                        .phone("+256-700-123457")
-                        .email("kampala@mutindo.com")
-                        .managerName("Jane Manager")
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(6))
-                        .build(),
-                BranchDto.builder()
-                        .id(3L)
-                        .name("Entebbe Branch")
-                        .code("ENT001")
-                        .address("Airport Road, Entebbe")
-                        .phone("+256-700-123458")
-                        .email("entebbe@mutindo.com")
-                        .managerName("Bob Manager")
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(3))
-                        .build()
-        );
-    }
+    // All mock data removed - real service implementation required
 
     // DTOs for Branch operations
 
