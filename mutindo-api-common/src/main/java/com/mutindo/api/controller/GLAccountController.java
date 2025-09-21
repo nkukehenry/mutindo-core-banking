@@ -35,8 +35,7 @@ import java.util.Optional;
 @Tag(name = "GL Accounts", description = "Chart of Accounts management operations")
 public class GLAccountController {
 
-    // TODO: Inject IChartOfAccountsService when available
-    // private final IChartOfAccountsService chartOfAccountsService;
+    private final com.mutindo.chartofaccounts.service.IChartOfAccountsService chartOfAccountsService;
 
     /**
      * Create new GL account
@@ -50,8 +49,9 @@ public class GLAccountController {
         log.info("Creating GL account via API - Code: {} - Type: {}", request.getAccountCode(), request.getAccountType());
 
         try {
-            GLAccountDto glAccount = GLAccountDto.builder()
-                    .id(System.currentTimeMillis())
+            // Use real Chart of Accounts service
+            com.mutindo.chartofaccounts.dto.CreateGLAccountRequest serviceRequest = 
+                com.mutindo.chartofaccounts.dto.CreateGLAccountRequest.builder()
                     .accountCode(request.getAccountCode())
                     .accountName(request.getAccountName())
                     .accountType(request.getAccountType())
@@ -60,11 +60,12 @@ public class GLAccountController {
                     .normalBalance(request.getNormalBalance())
                     .isControlAccount(request.getIsControlAccount())
                     .allowsPosting(request.getAllowsPosting())
-                    .level(calculateAccountLevel(request.getParentId()))
-                    .balance(BigDecimal.ZERO)
-                    .active(true)
-                    .createdAt(LocalDateTime.now())
                     .build();
+            
+            com.mutindo.chartofaccounts.dto.GLAccountDto serviceResult = chartOfAccountsService.createAccount(serviceRequest);
+            
+            // Convert service DTO to API DTO
+            GLAccountDto glAccount = convertToApiDto(serviceResult);
             
             log.info("GL account created successfully via API: {}", glAccount.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
