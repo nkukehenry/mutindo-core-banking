@@ -190,10 +190,9 @@ public class CustomFieldController {
         log.debug("Getting custom field values via API - Entity: {} - ID: {}", entityType, entityId);
 
         try {
-            List<CustomFieldValueDto> values = getMockCustomFieldValues(entityType, Long.parseLong(entityId));
-            
-            log.debug("Found {} custom field values", values.size());
-            return ResponseEntity.ok(BaseResponse.success(values));
+            // TODO: Replace with real service call
+            // List<CustomFieldValueDto> values = customFieldService.getCustomFieldValues(entityType, Long.parseLong(entityId));
+            throw new UnsupportedOperationException("Custom field service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get custom field values via API", e);
@@ -215,18 +214,9 @@ public class CustomFieldController {
         log.debug("Searching entities by custom fields via API - Entity: {}", request.getEntityType());
 
         try {
-            List<EntityWithCustomFieldsDto> entities = getMockEntitiesWithCustomFields(request.getEntityType());
-            PaginatedResponse<EntityWithCustomFieldsDto> response = PaginatedResponse.<EntityWithCustomFieldsDto>builder()
-                    .content(entities)
-                    .totalElements((long) entities.size())
-                    .totalPages(1)
-                    .size(entities.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<EntityWithCustomFieldsDto> response = customFieldService.searchByCustomFields(request, pageable);
+            throw new UnsupportedOperationException("Custom field service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to search by custom fields via API", e);
@@ -245,9 +235,9 @@ public class CustomFieldController {
         log.debug("Getting custom field statistics via API: {}", entityType);
 
         try {
-            List<CustomFieldStatsDto> stats = getMockCustomFieldStats(entityType);
-            
-            return ResponseEntity.ok(BaseResponse.success(stats));
+            // TODO: Replace with real service call
+            // List<CustomFieldStatsDto> stats = customFieldService.getCustomFieldStatistics(entityType);
+            throw new UnsupportedOperationException("Custom field service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get custom field statistics via API: {}", entityType, e);
