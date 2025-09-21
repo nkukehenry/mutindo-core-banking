@@ -469,32 +469,122 @@ mutindo-core-banking-system/
 - ✅ **Security files** - Sensitive configurations and backups excluded
 - ✅ **Build artifacts** - JAR, WAR, compiled classes ignored
 
+### **Branch Strategy**:
+```
+master     ← Production-ready releases
+  ↑
+develop    ← Integration branch for features
+  ↑
+feature/*  ← Individual feature branches
+```
+
+### **Feature Development Workflow**:
+
+#### **1. Start New Feature**:
+```bash
+# Switch to develop branch
+git checkout develop
+git pull origin develop
+
+# Create new feature branch
+git checkout -b feature/feature-name
+
+# Start development...
+```
+
+#### **2. Work on Feature**:
+```bash
+# Make changes and commit regularly
+git add .
+git commit -m "feat: implement specific functionality"
+
+# Push feature branch for backup/collaboration
+git push -u origin feature/feature-name
+```
+
+#### **3. Complete Feature**:
+```bash
+# Final commit and push
+git add .
+git commit -m "feat: complete feature implementation"
+git push origin feature/feature-name
+
+# Create Pull Request on GitHub:
+# 1. Go to GitHub repository
+# 2. Click "Compare & pull request" 
+# 3. Set base: develop ← compare: feature/feature-name
+# 4. Add description and request review
+# 5. Merge after approval
+```
+
+#### **4. Cleanup After Merge**:
+```bash
+# Switch back to develop
+git checkout develop
+git pull origin develop
+
+# Delete local feature branch
+git branch -d feature/feature-name
+
+# Delete remote feature branch
+git push origin --delete feature/feature-name
+```
+
+### **Release Workflow**:
+```bash
+# When develop is ready for release
+git checkout master
+git merge develop
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin master --tags
+```
+
 ### **Development Commands**:
 ```bash
-# Check repository status
+# Check repository status and branch
 git status
+git branch -a
 
 # View commit history
-git log --oneline
+git log --oneline --graph
 
-# Create feature branch
+# Create feature branch from develop
+git checkout develop
 git checkout -b feature/new-feature-name
 
 # Stage and commit changes
 git add .
 git commit -m "feat: description of changes"
 
-# Push to remote (when configured)
-git push origin feature/new-feature-name
+# Push feature branch
+git push -u origin feature/new-feature-name
+
+# Update from remote
+git fetch origin
+git pull origin develop
 ```
 
 ### **Commit Message Conventions**:
 - `feat:` - New features
-- `fix:` - Bug fixes
+- `fix:` - Bug fixes  
 - `refactor:` - Code refactoring
 - `docs:` - Documentation updates
 - `test:` - Test additions/modifications
 - `chore:` - Build/dependency updates
+- `perf:` - Performance improvements
+- `style:` - Code style changes
+- `ci:` - CI/CD related changes
+
+### **Pull Request Guidelines**:
+1. **Base Branch**: Always target `develop` branch for features
+2. **Title**: Use conventional commit format (`feat: add user management`)
+3. **Description**: Include:
+   - What changes were made
+   - Why the changes were necessary
+   - Any breaking changes
+   - Testing performed
+4. **Review**: Request review from team members
+5. **Merge**: Use "Squash and merge" to keep clean history
 
 ---
 
