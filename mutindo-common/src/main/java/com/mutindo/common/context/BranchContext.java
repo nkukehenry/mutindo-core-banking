@@ -12,10 +12,10 @@ import lombok.Data;
 @Builder
 public class BranchContext {
     
-    private String userId;
-    private String branchId; // null for institution admins
+    private Long userId;
+    private Long branchId; // null for institution admins
     private UserType userType;
-    private String institutionId;
+    private Long institutionId;
     
     /**
      * Check if user is institution admin (no branch restriction)
@@ -36,7 +36,7 @@ public class BranchContext {
      * Check if user can access a specific branch
      * Institution admins can access all branches, branch users only their own
      */
-    public boolean canAccessBranch(String targetBranchId) {
+    public boolean canAccessBranch(Long targetBranchId) {
         if (isInstitutionAdmin()) {
             return true;
         }

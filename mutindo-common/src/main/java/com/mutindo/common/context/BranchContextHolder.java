@@ -23,7 +23,7 @@ public class BranchContextHolder {
     /**
      * Get current user's branch ID (null for institution admins)
      */
-    public static String getCurrentBranchId() {
+    public static Long getCurrentBranchId() {
         BranchContext context = getContext();
         return context != null ? context.getBranchId() : null;
     }
@@ -31,7 +31,7 @@ public class BranchContextHolder {
     /**
      * Get current user ID
      */
-    public static String getCurrentUserId() {
+    public static Long getCurrentUserId() {
         BranchContext context = getContext();
         return context != null ? context.getUserId() : null;
     }
@@ -47,7 +47,7 @@ public class BranchContextHolder {
     /**
      * Check if current user can access a specific branch
      */
-    public static boolean canCurrentUserAccessBranch(String branchId) {
+    public static boolean canCurrentUserAccessBranch(Long branchId) {
         BranchContext context = getContext();
         return context != null && context.canAccessBranch(branchId);
     }
