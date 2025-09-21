@@ -34,8 +34,8 @@ import java.util.Optional;
 @Tag(name = "Products", description = "Banking product management operations")
 public class ProductController {
 
-    // TODO: Inject IProductService when available
-    // private final IProductService productService;
+    // Service will be injected when IProductService is implemented
+    // For now, throwing exceptions to indicate real service needed
 
     /**
      * Create new banking product
@@ -49,27 +49,9 @@ public class ProductController {
         log.info("Creating product via API - Name: {} - Code: {}", request.getName(), request.getCode());
 
         try {
-            // TODO: Use real service when available
-            ProductDto product = ProductDto.builder()
-                    .id(System.currentTimeMillis())
-                    .name(request.getName())
-                    .code(request.getCode())
-                    .description(request.getDescription())
-                    .productType(request.getProductType())
-                    .currency(request.getCurrency())
-                    .minimumBalance(request.getMinimumBalance())
-                    .maximumBalance(request.getMaximumBalance())
-                    .interestRate(request.getInterestRate())
-                    .fees(request.getFees())
-                    .allowOverdraft(request.getAllowOverdraft())
-                    .overdraftLimit(request.getOverdraftLimit())
-                    .active(true)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            
-            log.info("Product created successfully via API: {}", product.getId());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(BaseResponse.success(product, "Product created successfully"));
+            // TODO: Replace with real service call
+            // ProductDto product = productService.createProduct(request);
+            throw new UnsupportedOperationException("Product service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to create product via API", e);
@@ -88,15 +70,10 @@ public class ProductController {
         log.debug("Getting product via API: {}", productId);
 
         try {
-            Long productIdLong = Long.parseLong(productId);
-            Optional<ProductDto> productOpt = findProductById(productIdLong);
-            
-            if (productOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(productOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("Product not found"));
-            }
+            // TODO: Replace with real service call
+            // Long productIdLong = Long.parseLong(productId);
+            // Optional<ProductDto> productOpt = productService.getProductById(productIdLong);
+            throw new UnsupportedOperationException("Product service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get product via API: {}", productId, e);
@@ -268,72 +245,7 @@ public class ProductController {
         }
     }
 
-    // Private helper methods (temporary until real service is available)
-
-    private Optional<ProductDto> findProductById(Long productId) {
-        return getMockProducts().stream()
-                .filter(product -> product.getId().equals(productId))
-                .findFirst();
-    }
-
-    private Optional<ProductDto> findProductByCode(String productCode) {
-        return getMockProducts().stream()
-                .filter(product -> product.getCode().equals(productCode))
-                .findFirst();
-    }
-
-    private List<ProductDto> getMockProducts() {
-        return List.of(
-                ProductDto.builder()
-                        .id(1L)
-                        .name("Savings Account")
-                        .code("SAV001")
-                        .description("Standard savings account with competitive interest rates")
-                        .productType("SAVINGS")
-                        .currency("UGX")
-                        .minimumBalance(BigDecimal.valueOf(50000))
-                        .maximumBalance(BigDecimal.valueOf(50000000))
-                        .interestRate(BigDecimal.valueOf(5.5))
-                        .fees(BigDecimal.valueOf(5000))
-                        .allowOverdraft(false)
-                        .overdraftLimit(BigDecimal.ZERO)
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(12))
-                        .build(),
-                ProductDto.builder()
-                        .id(2L)
-                        .name("Current Account")
-                        .code("CUR001")
-                        .description("Business current account with overdraft facility")
-                        .productType("CURRENT")
-                        .currency("UGX")
-                        .minimumBalance(BigDecimal.valueOf(100000))
-                        .maximumBalance(BigDecimal.valueOf(100000000))
-                        .interestRate(BigDecimal.ZERO)
-                        .fees(BigDecimal.valueOf(10000))
-                        .allowOverdraft(true)
-                        .overdraftLimit(BigDecimal.valueOf(5000000))
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(6))
-                        .build(),
-                ProductDto.builder()
-                        .id(3L)
-                        .name("Fixed Deposit")
-                        .code("FD001")
-                        .description("Fixed deposit with guaranteed returns")
-                        .productType("FIXED_DEPOSIT")
-                        .currency("UGX")
-                        .minimumBalance(BigDecimal.valueOf(1000000))
-                        .maximumBalance(BigDecimal.valueOf(500000000))
-                        .interestRate(BigDecimal.valueOf(8.5))
-                        .fees(BigDecimal.ZERO)
-                        .allowOverdraft(false)
-                        .overdraftLimit(BigDecimal.ZERO)
-                        .active(true)
-                        .createdAt(LocalDateTime.now().minusMonths(3))
-                        .build()
-        );
-    }
+    // All mock data removed - real service implementation required
 
     // DTOs for Product operations
 
