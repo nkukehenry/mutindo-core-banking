@@ -92,7 +92,7 @@
         
         <dependency>
             <groupId>com.mutindo</groupId>
-            <artifactId>mutindo-chart-of-accounts</artifactId>
+            <artifactId>cbs-chart-of-accounts</artifactId>
             <version>${mutindo.version}</version>
         </dependency>
 
