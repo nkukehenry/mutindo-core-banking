@@ -395,28 +395,40 @@ All entities use **numeric auto-increment IDs (`BIGINT AUTO_INCREMENT`)** for op
 - Maven 3.8+
 - MySQL 8.0+ running on localhost:3306
 - Database `mutindo` created
+- Git (for version control)
 
-### **1. Build the Project**:
+### **1. Clone/Setup the Repository**:
 ```bash
-# Clean build with cache purging
+# Clone from GitHub
+git clone https://github.com/nkukehenry/mutindo-core-banking.git
+cd mutindo-core-banking
+
+# Or if already cloned locally
+git status  # Verify clean working tree
+git pull origin master  # Get latest changes
+```
+
+### **2. Build the Project**:
+```bash
+# Clean build with cache purging (recommended after major changes)
 mvn dependency:purge-local-repository clean install -U -DskipTests
 
 # Or standard build
 mvn clean install -DskipTests
 ```
 
-### **2. Start the Application**:
+### **3. Start the Application**:
 ```bash
 cd mutindo-application
 mvn spring-boot:run
 ```
 
-### **3. Test the System**:
+### **4. Test the System**:
 - **Health Check**: http://localhost:8081/health
 - **Login**: `POST http://localhost:8081/api/v1/auth/login`
 - **API Testing**: Use `mutindo-application/test-endpoints.rest`
 
-### **4. Default Login Credentials**:
+### **5. Default Login Credentials**:
 | Username | Password | Role | Branch |
 |----------|----------|------|---------|
 | admin | Admin!2025 | SUPER_ADMIN | All Branches |
@@ -424,11 +436,65 @@ mvn spring-boot:run
 | teller1 | Admin!2025 | TELLER | Kampala Main |
 | teller2 | Admin!2025 | TELLER | Entebbe Branch |
 
-### **5. Test Data Available**:
+### **6. Test Data Available**:
 - **4 Branches** - Head Office, Kampala Main, Entebbe Branch, Jinja Branch
 - **3 Customers** - John Mutindo, Jane Nakamura, Mutindo Technologies Ltd
 - **4 Accounts** - With real balances using numeric IDs
 - **Complete Chart of Accounts** - Assets, Liabilities, Equity, Income, Expenses
+
+---
+
+## 🔄 **Git Workflow & Development**
+
+### **Repository Structure**:
+```
+mutindo-core-banking-system/
+├── .gitignore              # Comprehensive Git ignore rules
+├── README.md               # This documentation
+├── pom.xml                 # Parent POM with module management
+├── rebuild.bat             # Quick rebuild script
+├── system.properties       # System configuration
+├── mutindo-*/              # All project modules
+└── mutindo-application/    # Main Spring Boot application
+    ├── test-endpoints.rest # API testing file
+    └── src/main/resources/
+        └── db/migration/   # Flyway database migrations
+```
+
+### **Git Ignore Coverage**:
+- ✅ **All `target/` directories** - Maven build artifacts excluded
+- ✅ **IDE files** - IntelliJ, Eclipse, VSCode configurations ignored
+- ✅ **Logs and temporary files** - No log pollution in commits
+- ✅ **OS-specific files** - Windows, macOS, Linux system files ignored
+- ✅ **Security files** - Sensitive configurations and backups excluded
+- ✅ **Build artifacts** - JAR, WAR, compiled classes ignored
+
+### **Development Commands**:
+```bash
+# Check repository status
+git status
+
+# View commit history
+git log --oneline
+
+# Create feature branch
+git checkout -b feature/new-feature-name
+
+# Stage and commit changes
+git add .
+git commit -m "feat: description of changes"
+
+# Push to remote (when configured)
+git push origin feature/new-feature-name
+```
+
+### **Commit Message Conventions**:
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `refactor:` - Code refactoring
+- `docs:` - Documentation updates
+- `test:` - Test additions/modifications
+- `chore:` - Build/dependency updates
 
 ---
 
