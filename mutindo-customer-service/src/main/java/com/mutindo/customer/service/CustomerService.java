@@ -318,7 +318,8 @@ public class CustomerService implements ICustomerService {
      * Validate branch access based on user context
      */
     private void validateBranchAccess(String branchId) {
-        if (!BranchContextHolder.canCurrentUserAccessBranch(branchId)) {
+        Long branchIdLong = branchId != null ? Long.parseLong(branchId) : null;
+        if (!BranchContextHolder.canCurrentUserAccessBranch(branchIdLong)) {
             throw new BusinessException("Access denied to branch: " + branchId, "BRANCH_ACCESS_DENIED");
         }
         
@@ -367,7 +368,8 @@ public class CustomerService implements ICustomerService {
         customer.setKycDocuments(request.getKycDocuments());
         customer.setCustomData(request.getCustomData());
         customer.setActive(true);
-        customer.setCreatedBy(BranchContextHolder.getCurrentUserId());
+        Long currentUserId = BranchContextHolder.getCurrentUserId();
+        customer.setCreatedBy(currentUserId != null ? currentUserId.toString() : "system");
         return customer;
     }
 
@@ -399,7 +401,7 @@ public class CustomerService implements ICustomerService {
      * Validate customer access based on branch context
      */
     private void validateCustomerAccess(Customer customer) {
-        if (!BranchContextHolder.canCurrentUserAccessBranch(customer.getPrimaryBranchId().toString())) {
+        if (!BranchContextHolder.canCurrentUserAccessBranch(customer.getPrimaryBranchId())) {
             throw new BusinessException("Access denied to customer", "CUSTOMER_ACCESS_DENIED");
         }
     }
@@ -422,7 +424,8 @@ public class CustomerService implements ICustomerService {
         }
         
         // Branch users can only search their own branch
-        return BranchContextHolder.getCurrentBranchId();
+        Long currentBranchId = BranchContextHolder.getCurrentBranchId();
+        return currentBranchId != null ? currentBranchId.toString() : null;
     }
 
     /**
