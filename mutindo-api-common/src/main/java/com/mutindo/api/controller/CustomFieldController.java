@@ -94,10 +94,9 @@ public class CustomFieldController {
         log.debug("Getting custom fields for entity via API: {}", entityType);
 
         try {
-            List<CustomFieldDto> fields = getMockCustomFields(entityType);
-            
-            log.debug("Found {} custom fields for entity: {}", fields.size(), entityType);
-            return ResponseEntity.ok(BaseResponse.success(fields));
+            // TODO: Replace with real service call
+            // List<CustomFieldDto> fields = customFieldService.getCustomFieldsByEntityType(entityType);
+            throw new UnsupportedOperationException("Custom field service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get custom fields via API: {}", entityType, e);
@@ -301,94 +300,7 @@ public class CustomFieldController {
 
     // Private helper methods (temporary until real service is available)
 
-    private List<CustomFieldDto> getMockCustomFields(String entityType) {
-        return List.of(
-                CustomFieldDto.builder()
-                        .id(1L)
-                        .entityType(entityType)
-                        .code("emergency_contact")
-                        .label("Emergency Contact")
-                        .dataType("TEXT")
-                        .validation(Map.of("required", true, "maxLength", 100))
-                        .visibility("PUBLIC")
-                        .uiHint("TEXTBOX")
-                        .isIndexed(true)
-                        .required(true)
-                        .sortOrder(1)
-                        .active(true)
-                        .build(),
-                CustomFieldDto.builder()
-                        .id(2L)
-                        .entityType(entityType)
-                        .code("risk_category")
-                        .label("Risk Category")
-                        .dataType("SELECT")
-                        .validation(Map.of("required", false))
-                        .visibility("INTERNAL")
-                        .uiHint("DROPDOWN")
-                        .options(Map.of("options", List.of("LOW", "MEDIUM", "HIGH")))
-                        .isIndexed(true)
-                        .required(false)
-                        .sortOrder(2)
-                        .active(true)
-                        .build()
-        );
-    }
-
-    private List<CustomFieldValueDto> getMockCustomFieldValues(String entityType, Long entityId) {
-        return List.of(
-                CustomFieldValueDto.builder()
-                        .id(1L)
-                        .customFieldId(1L)
-                        .entityType(entityType)
-                        .entityId(entityId)
-                        .fieldCode("emergency_contact")
-                        .fieldLabel("Emergency Contact")
-                        .dataType("TEXT")
-                        .value("John Doe - +256-700-123456")
-                        .isValid(true)
-                        .version(1)
-                        .updatedAt(LocalDateTime.now())
-                        .build(),
-                CustomFieldValueDto.builder()
-                        .id(2L)
-                        .customFieldId(2L)
-                        .entityType(entityType)
-                        .entityId(entityId)
-                        .fieldCode("risk_category")
-                        .fieldLabel("Risk Category")
-                        .dataType("SELECT")
-                        .value("MEDIUM")
-                        .isValid(true)
-                        .version(1)
-                        .updatedAt(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    private List<EntityWithCustomFieldsDto> getMockEntitiesWithCustomFields(String entityType) {
-        return List.of(
-                EntityWithCustomFieldsDto.builder()
-                        .entityId(1L)
-                        .entityType(entityType)
-                        .entityName("John Mutindo")
-                        .customFields(getMockCustomFieldValues(entityType, 1L))
-                        .build()
-        );
-    }
-
-    private List<CustomFieldStatsDto> getMockCustomFieldStats(String entityType) {
-        return List.of(
-                CustomFieldStatsDto.builder()
-                        .fieldCode("emergency_contact")
-                        .fieldLabel("Emergency Contact")
-                        .totalEntities(1000L)
-                        .entitiesWithValue(950L)
-                        .completionRate(95.0)
-                        .lastUpdated(LocalDateTime.now())
-                        .build()
-        );
-    }
+    // All mock data removed - real custom field service implementation required
 
     // DTOs for Custom Field operations
 
