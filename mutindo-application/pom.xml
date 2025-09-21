@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mutindo</groupId>
+    <artifactId>mutindo-application</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    
+    <name>Mutindo Core Banking Application</name>
+    <description>Main Spring Boot application for Mutindo Core Banking System</description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.version>3.2.0</spring-boot.version>
+        <mutindo.version>1.0.0-SNAPSHOT</mutindo.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        
+        <!-- Database Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+        
+        <!-- Flyway for Database Migrations -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.22.3</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+            <version>9.22.3</version>
+        </dependency>
+        
+        <!-- Core Business Services - Real Implementation -->
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-entities</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-repositories</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-jwt</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-encryption</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <!-- Infrastructure Services -->
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>mutindo-common</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>mutindo-exceptions</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <!-- Fix logging issues -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin with parameter names preservation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <parameters>true</parameters> <!-- Preserve parameter names for Spring -->
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

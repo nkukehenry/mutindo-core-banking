@@ -1,0 +1,300 @@
+###
+# Mutindo Core Banking System - API Testing (REAL DATABASE INTEGRATION)
+# REST Client file for testing all endpoints with actual MySQL database
+# All data is now persisted and uses real business services
+# Run each request by clicking the "Send Request" link above each request
+###
+
+@baseUrl = http://localhost:8081
+@contentType = application/json
+
+###############################################################################
+# 1. HEALTH & SYSTEM STATUS CHECKS
+###############################################################################
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Application Info
+GET {{baseUrl}}/info
+
+### Welcome Endpoint
+GET {{baseUrl}}/
+
+### System Status
+GET {{baseUrl}}/api/v1/system/status
+
+###############################################################################
+# 2. SERVICE STATUS ENDPOINTS
+###############################################################################
+
+### Authentication Service Status
+GET {{baseUrl}}/api/v1/auth/status
+
+### Customer Service Status
+GET {{baseUrl}}/api/v1/customers/status
+
+### Account Service Status
+GET {{baseUrl}}/api/v1/accounts/status
+
+### Transaction Service Status
+GET {{baseUrl}}/api/v1/transactions/status
+
+### General Ledger Service Status
+GET {{baseUrl}}/api/v1/gl/status
+
+###############################################################################
+# 3. AUTHENTICATION TESTING
+###############################################################################
+
+### Login - Valid Credentials (admin/Admin!2025) - REAL DATABASE AUTH
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "Admin!2025"
+}
+
+### Login - Branch Manager (manager1/Admin!2025)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "manager1",
+  "password": "Admin!2025"
+}
+
+### Login - Teller (teller1/Admin!2025)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "teller1",
+  "password": "Admin!2025"
+}
+
+### Login - Invalid Credentials
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "wrongpassword"
+}
+
+###############################################################################
+# 4. CUSTOMER MANAGEMENT
+###############################################################################
+
+### Get All Customers
+GET {{baseUrl}}/api/v1/customers
+
+### Get Specific Customer (ID: 1 - John Mutindo)
+GET {{baseUrl}}/api/v1/customers/1
+
+### Get Non-Existent Customer
+GET {{baseUrl}}/api/v1/customers/CUST999
+
+### Create New Customer
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+
+{
+  "name": "Jane Mutindo",
+  "email": "jane@mutindo.com",
+  "phone": "+256700987654",
+  "branch": "KAMPALA_MAIN"
+}
+
+### Create Another Customer
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+
+{
+  "name": "Peter Nakamura",
+  "email": "peter@mutindo.com",
+  "phone": "+256700555123",
+  "branch": "KAMPALA_MAIN"
+}
+
+###############################################################################
+# 5. ACCOUNT MANAGEMENT
+###############################################################################
+
+### Get All Accounts
+GET {{baseUrl}}/api/v1/accounts
+
+### Get Specific Account (ID: 1 - John's Savings Account)
+GET {{baseUrl}}/api/v1/accounts/1
+
+### Get Account Balance (REAL DATABASE BALANCE)
+GET {{baseUrl}}/api/v1/accounts/1/balance
+
+### Get Another Account (ID: 2 - John's Current Account)
+GET {{baseUrl}}/api/v1/accounts/2
+
+### Get Corporate Account (ID: 4 - Mutindo Technologies Ltd)
+GET {{baseUrl}}/api/v1/accounts/4
+
+### Get Non-Existent Account
+GET {{baseUrl}}/api/v1/accounts/ACC999
+
+### Create New Account for Customer ID: 1
+POST {{baseUrl}}/api/v1/accounts
+Content-Type: {{contentType}}
+
+{
+  "customerId": 1,
+  "productId": 2,
+  "branchId": 2,
+  "currency": "UGX"
+}
+
+### Create Another Account (will auto-assign to next customer)
+POST {{baseUrl}}/api/v1/accounts
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST002",
+  "accountType": "SAVINGS",
+  "currency": "USD"
+}
+
+###############################################################################
+# 6. TRANSACTION PROCESSING
+###############################################################################
+
+### Make a Deposit to Account ID: 1 (John's Savings - 150,000 UGX)
+POST {{baseUrl}}/api/v1/transactions/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": 1,
+  "amount": 50000
+}
+
+### Check Balance After Deposit
+GET {{baseUrl}}/api/v1/accounts/1/balance
+
+### Make a Withdrawal from Account ID: 1
+POST {{baseUrl}}/api/v1/transactions/withdraw
+Content-Type: {{contentType}}
+
+{
+  "accountId": 1,
+  "amount": 25000
+}
+
+### Check Balance After Withdrawal
+GET {{baseUrl}}/api/v1/accounts/1/balance
+
+### Try Withdrawal with Insufficient Funds
+POST {{baseUrl}}/api/v1/transactions/withdraw
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC001",
+  "amount": 500000
+}
+
+### Try Transaction on Non-Existent Account
+POST {{baseUrl}}/api/v1/transactions/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC999",
+  "amount": 10000
+}
+
+###############################################################################
+# 7. COMPREHENSIVE BANKING WORKFLOW TEST
+###############################################################################
+
+### Step 1: Login to get JWT token
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+### Step 2: Create a new customer
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+
+{
+  "name": "Sarah Mutindo",
+  "email": "sarah@mutindo.com",
+  "phone": "+256700111222",
+  "branch": "KAMPALA_MAIN"
+}
+
+### Step 3: Create account for the new customer
+POST {{baseUrl}}/api/v1/accounts
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST003",
+  "accountType": "SAVINGS",
+  "currency": "UGX"
+}
+
+### Step 4: Make initial deposit
+POST {{baseUrl}}/api/v1/transactions/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC003",
+  "amount": 100000
+}
+
+### Step 5: Check final balance
+GET {{baseUrl}}/api/v1/accounts/ACC003/balance
+
+### Step 6: View all customers and accounts
+GET {{baseUrl}}/api/v1/customers
+
+###
+GET {{baseUrl}}/api/v1/accounts
+
+###############################################################################
+# 8. ERROR TESTING
+###############################################################################
+
+### Test Invalid JSON
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": 
+}
+
+### Test Missing Required Fields
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+
+{
+  "email": "incomplete@mutindo.com"
+}
+
+### Test Invalid Amount (negative)
+POST {{baseUrl}}/api/v1/transactions/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC001",
+  "amount": -5000
+}
+
+###############################################################################
+# NOTES:
+# - All endpoints should return JSON responses with success/error indicators
+# - Authentication returns JWT tokens (currently mock tokens)
+# - Account balances update in real-time within the session
+# - All data resets when application restarts (mock mode)
+# - Default test account ACC001 starts with 150,000 UGX balance
+# - Default customer CUST001 is "John Mutindo"
+###############################################################################

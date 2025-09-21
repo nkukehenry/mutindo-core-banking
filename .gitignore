@@ -1,0 +1,162 @@
+# Mutindo Core Banking System - Git Ignore File
+
+# =============================================================================
+# MAVEN BUILD ARTIFACTS
+# =============================================================================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# =============================================================================
+# JAVA COMPILED FILES
+# =============================================================================
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# =============================================================================
+# IDE FILES
+# =============================================================================
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# =============================================================================
+# SPRING BOOT
+# =============================================================================
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# LOGS
+# =============================================================================
+*.log
+logs/
+log/
+
+# =============================================================================
+# TEMPORARY FILES
+# =============================================================================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# =============================================================================
+# DATABASE FILES
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================================
+# SECURITY & CONFIGURATION
+# =============================================================================
+# Sensitive configuration files
+application-local.properties
+application-dev.properties
+application-prod.properties
+*.env
+.env.*
+
+# Maven settings with credentials
+settings.xml.backup
+
+# =============================================================================
+# DEPENDENCY DIRECTORIES
+# =============================================================================
+node_modules/
+bower_components/
+
+# =============================================================================
+# TEST COVERAGE
+# =============================================================================
+coverage/
+*.lcov
+
+# =============================================================================
+# PACKAGE MANAGERS
+# =============================================================================
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
+
+# =============================================================================
+# CUSTOM PROJECT EXCLUSIONS
+# =============================================================================
+# Backup files
+*.backup
+*.bak
+
+# Test output
+test-output/
+test-results/
+
+# Documentation build
+docs/build/
+
+# Local development scripts
+local-*.sh
+local-*.bat
+dev-*.sh
+dev-*.bat

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mutindo</groupId>
+        <artifactId>mutindo-core-banking-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cbs-sms</artifactId>
+    <name>CBS SMS</name>
+    <description>SMS service - single responsibility for SMS operations</description>
+
+    <properties>
+        <mutindo.version>1.0.0-SNAPSHOT</mutindo.version>
+    </properties>
+
+    <dependencies>
+        <!-- Minimal SMS-related dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-validation</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-logging</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- HTTP client for SMS gateway -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+    </dependencies>
+</project>

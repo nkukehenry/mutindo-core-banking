@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mutindo</groupId>
+        <artifactId>mutindo-core-banking-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cbs-email</artifactId>
+    <name>CBS Email</name>
+    <description>Email service - single responsibility for email operations</description>
+
+    <properties>
+        <mutindo.version>1.0.0-SNAPSHOT</mutindo.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-validation</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-logging</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Template engine for email templates -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+    </dependencies>
+</project>

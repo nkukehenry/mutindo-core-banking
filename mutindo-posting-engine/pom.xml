@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mutindo</groupId>
+        <artifactId>mutindo-core-banking-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cbs-posting-engine</artifactId>
+    <name>CBS Posting Engine</name>
+    <description>Double-entry posting engine with Strategy pattern</description>
+
+    <properties>
+        <mutindo.version>1.0.0-SNAPSHOT</mutindo.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-entities</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-repositories</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>mutindo-common</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>mutindo-exceptions</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-chart-of-accounts</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-logging</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+    </dependencies>
+</project>
