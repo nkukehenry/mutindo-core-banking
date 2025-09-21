@@ -166,19 +166,9 @@ public class ProductController {
                 productType, currency, active);
 
         try {
-            List<ProductDto> products = getMockProducts();
-            PaginatedResponse<ProductDto> response = PaginatedResponse.<ProductDto>builder()
-                    .content(products)
-                    .totalElements((long) products.size())
-                    .totalPages(1)
-                    .size(products.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            log.debug("Found {} products via API", products.size());
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<ProductDto> response = productService.getAllProducts(productType, currency, active, pageable);
+            throw new UnsupportedOperationException("Product service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to get products via API", e);
@@ -203,18 +193,9 @@ public class ProductController {
         log.debug("Searching products via API - Term: {}", searchTerm);
 
         try {
-            List<ProductDto> products = getMockProducts();
-            PaginatedResponse<ProductDto> response = PaginatedResponse.<ProductDto>builder()
-                    .content(products)
-                    .totalElements((long) products.size())
-                    .totalPages(1)
-                    .size(products.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            // TODO: Replace with real service call
+            // PaginatedResponse<ProductDto> response = productService.searchProducts(searchTerm, productType, currency, active, pageable);
+            throw new UnsupportedOperationException("Product service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to search products via API", e);
