@@ -166,24 +166,9 @@ public class CustomFieldController {
         log.info("Setting custom field values via API - Entity: {} - ID: {}", entityType, entityId);
 
         try {
-            List<CustomFieldValueDto> values = fieldValues.entrySet().stream()
-                    .map(entry -> CustomFieldValueDto.builder()
-                            .id(System.currentTimeMillis() + entry.getKey().hashCode())
-                            .customFieldId(1L) // Mock field ID
-                            .entityType(entityType)
-                            .entityId(Long.parseLong(entityId))
-                            .fieldCode(entry.getKey())
-                            .fieldLabel("Mock Field")
-                            .dataType("TEXT")
-                            .value(entry.getValue())
-                            .isValid(true)
-                            .version(1L)
-                            .updatedAt(LocalDateTime.now())
-                            .build())
-                    .toList();
-            
-            log.info("Custom field values set successfully via API - Count: {}", values.size());
-            return ResponseEntity.ok(BaseResponse.success(values, "Custom field values updated successfully"));
+            // TODO: Replace with real service call
+            // List<CustomFieldValueDto> values = customFieldService.setCustomFieldValues(entityType, Long.parseLong(entityId), fieldValues);
+            throw new UnsupportedOperationException("Custom field service not yet implemented - real database integration required");
             
         } catch (Exception e) {
             log.error("Failed to set custom field values via API", e);
