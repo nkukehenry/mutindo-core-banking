@@ -1,12 +1,15 @@
 ###
-# Mutindo Core Banking System - API Testing (REAL DATABASE INTEGRATION)
-# REST Client file for testing all endpoints with actual MySQL database
-# All data is now persisted and uses real business services
+# Mutindo Core Banking System - Comprehensive API Testing
+# REST Client file for testing all endpoints with complete CRUD operations
+# Real database integration with enterprise-grade features
 # Run each request by clicking the "Send Request" link above each request
 ###
 
 @baseUrl = http://localhost:8081
 @contentType = application/json
+
+# Authentication token (set after login)
+@authToken = Bearer YOUR_JWT_TOKEN_HERE
 
 ###############################################################################
 # 1. HEALTH & SYSTEM STATUS CHECKS
@@ -290,11 +293,648 @@ Content-Type: {{contentType}}
 }
 
 ###############################################################################
+# 9. BRANCH MANAGEMENT
+###############################################################################
+
+### Get All Branches
+GET {{baseUrl}}/api/v1/branches
+Authorization: {{authToken}}
+
+### Get Branch by ID
+GET {{baseUrl}}/api/v1/branches/1
+Authorization: {{authToken}}
+
+### Create New Branch
+POST {{baseUrl}}/api/v1/branches
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "name": "Jinja Branch",
+  "code": "JJA001",
+  "address": "Main Street, Jinja",
+  "phone": "+256-700-123459",
+  "email": "jinja@mutindo.com",
+  "managerName": "Alice Manager",
+  "region": "Eastern"
+}
+
+### Update Branch
+PUT {{baseUrl}}/api/v1/branches/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "name": "Head Office Updated",
+  "code": "HO001",
+  "address": "Updated Address, Kampala",
+  "phone": "+256-700-123456",
+  "email": "headoffice@mutindo.com",
+  "managerName": "Updated Manager",
+  "region": "Central",
+  "active": true
+}
+
+### Search Branches
+GET {{baseUrl}}/api/v1/branches/search?searchTerm=Kampala&active=true
+Authorization: {{authToken}}
+
+### Deactivate Branch
+DELETE {{baseUrl}}/api/v1/branches/3?reason=Branch consolidation
+Authorization: {{authToken}}
+
+###############################################################################
+# 10. PRODUCT MANAGEMENT
+###############################################################################
+
+### Get All Products
+GET {{baseUrl}}/api/v1/products
+Authorization: {{authToken}}
+
+### Get Product by ID
+GET {{baseUrl}}/api/v1/products/1
+Authorization: {{authToken}}
+
+### Get Product by Code
+GET {{baseUrl}}/api/v1/products/code/SAV001
+Authorization: {{authToken}}
+
+### Create New Product
+POST {{baseUrl}}/api/v1/products
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "name": "Premium Savings",
+  "code": "PSAV001",
+  "description": "Premium savings account with higher interest",
+  "productType": "SAVINGS",
+  "currency": "UGX",
+  "minimumBalance": 100000,
+  "maximumBalance": 100000000,
+  "interestRate": 7.5,
+  "fees": 3000,
+  "allowOverdraft": false,
+  "overdraftLimit": 0
+}
+
+### Update Product
+PUT {{baseUrl}}/api/v1/products/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "name": "Updated Savings Account",
+  "code": "SAV001",
+  "description": "Updated standard savings account",
+  "productType": "SAVINGS",
+  "currency": "UGX",
+  "minimumBalance": 75000,
+  "maximumBalance": 50000000,
+  "interestRate": 6.0,
+  "fees": 4000,
+  "allowOverdraft": false,
+  "overdraftLimit": 0,
+  "active": true
+}
+
+### Search Products
+GET {{baseUrl}}/api/v1/products/search?searchTerm=savings&currency=UGX&active=true
+Authorization: {{authToken}}
+
+###############################################################################
+# 11. USER MANAGEMENT
+###############################################################################
+
+### Get All Users
+GET {{baseUrl}}/api/v1/users
+Authorization: {{authToken}}
+
+### Get User by ID
+GET {{baseUrl}}/api/v1/users/1
+Authorization: {{authToken}}
+
+### Get User by Username
+GET {{baseUrl}}/api/v1/users/username/admin
+Authorization: {{authToken}}
+
+### Create New User
+POST {{baseUrl}}/api/v1/users
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "username": "newuser",
+  "email": "newuser@mutindo.com",
+  "firstName": "New",
+  "lastName": "User",
+  "phone": "+256-700-999888",
+  "userType": "TELLER",
+  "branchId": 2,
+  "supervisorId": 2,
+  "department": "Customer Service",
+  "position": "Junior Teller",
+  "employeeId": "EMP004",
+  "initialPassword": "TempPass123!"
+}
+
+### Update User
+PUT {{baseUrl}}/api/v1/users/3
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "username": "teller1",
+  "email": "teller1@mutindo.com",
+  "firstName": "Jane",
+  "lastName": "Updated Teller",
+  "phone": "+256-700-000003",
+  "userType": "SENIOR_TELLER",
+  "branchId": 2,
+  "supervisorId": 2,
+  "department": "Customer Service",
+  "position": "Senior Teller",
+  "employeeId": "EMP003",
+  "active": true
+}
+
+### Search Users
+GET {{baseUrl}}/api/v1/users/search?searchTerm=teller&userType=TELLER&branchId=2&active=true
+Authorization: {{authToken}}
+
+### Reset User Password
+PATCH {{baseUrl}}/api/v1/users/3/reset-password
+Authorization: {{authToken}}
+
+### Lock User Account
+PATCH {{baseUrl}}/api/v1/users/3/lock?reason=Security violation
+Authorization: {{authToken}}
+
+### Unlock User Account
+PATCH {{baseUrl}}/api/v1/users/3/unlock
+Authorization: {{authToken}}
+
+###############################################################################
+# 12. GL ACCOUNT (CHART OF ACCOUNTS) MANAGEMENT
+###############################################################################
+
+### Get Chart of Accounts Hierarchy
+GET {{baseUrl}}/api/v1/gl-accounts/hierarchy?activeOnly=true
+Authorization: {{authToken}}
+
+### Get GL Account by ID
+GET {{baseUrl}}/api/v1/gl-accounts/1
+Authorization: {{authToken}}
+
+### Get GL Account by Code
+GET {{baseUrl}}/api/v1/gl-accounts/code/1010
+Authorization: {{authToken}}
+
+### Create New GL Account
+POST {{baseUrl}}/api/v1/gl-accounts
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountCode": "1020",
+  "accountName": "Cash in Hand",
+  "accountType": "ASSET",
+  "parentId": 1,
+  "description": "Physical cash holdings",
+  "normalBalance": "DEBIT",
+  "isControlAccount": false,
+  "allowsPosting": true
+}
+
+### Update GL Account
+PUT {{baseUrl}}/api/v1/gl-accounts/2
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountCode": "1010",
+  "accountName": "Cash at Bank - Updated",
+  "accountType": "ASSET",
+  "parentId": 1,
+  "description": "Updated bank account balances",
+  "normalBalance": "DEBIT",
+  "isControlAccount": false,
+  "allowsPosting": true,
+  "active": true
+}
+
+### Search GL Accounts
+GET {{baseUrl}}/api/v1/gl-accounts/search?searchTerm=cash&accountType=ASSET&allowsPosting=true
+Authorization: {{authToken}}
+
+### Get GL Account Balance
+GET {{baseUrl}}/api/v1/gl-accounts/2/balance
+Authorization: {{authToken}}
+
+###############################################################################
+# 13. LOAN MANAGEMENT
+###############################################################################
+
+### Get All Loans (with pagination)
+GET {{baseUrl}}/api/v1/loans?page=0&size=10
+Authorization: {{authToken}}
+
+### Get Loan by ID
+GET {{baseUrl}}/api/v1/loans/1
+Authorization: {{authToken}}
+
+### Get Customer Loans
+GET {{baseUrl}}/api/v1/loans/customer/1
+Authorization: {{authToken}}
+
+### Create New Loan Application
+POST {{baseUrl}}/api/v1/loans
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "customerId": 1,
+  "productId": 1,
+  "branchId": 2,
+  "principalAmount": 3000000,
+  "interestRate": 15.0,
+  "termMonths": 18,
+  "purpose": "Small business expansion",
+  "collateralDescription": "Motorcycle - Honda Boda",
+  "collateralValue": 4500000
+}
+
+### Approve Loan
+PATCH {{baseUrl}}/api/v1/loans/1/approve?approvedAmount=3000000&comments=Approved after verification
+Authorization: {{authToken}}
+
+### Reject Loan
+PATCH {{baseUrl}}/api/v1/loans/2/reject?reason=Insufficient collateral
+Authorization: {{authToken}}
+
+### Disburse Loan
+POST {{baseUrl}}/api/v1/loans/1/disburse
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "disbursementAmount": 3000000,
+  "targetAccountNumber": "ACC001",
+  "disbursementMethod": "BANK_TRANSFER"
+}
+
+### Make Loan Payment
+POST {{baseUrl}}/api/v1/loans/1/payments
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "paymentAmount": 200000,
+  "paymentMethod": "CASH",
+  "remarks": "Monthly installment payment"
+}
+
+### Get Loan Repayment Schedule
+GET {{baseUrl}}/api/v1/loans/1/schedule
+Authorization: {{authToken}}
+
+### Search Loans
+GET {{baseUrl}}/api/v1/loans/search?searchTerm=business&status=ACTIVE&customerId=1
+Authorization: {{authToken}}
+
+###############################################################################
+# 14. CUSTOM FIELDS MANAGEMENT
+###############################################################################
+
+### Get Custom Field Definitions for Customer Entity
+GET {{baseUrl}}/api/v1/custom-fields/definitions/CUSTOMER
+Authorization: {{authToken}}
+
+### Create Custom Field Definition
+POST {{baseUrl}}/api/v1/custom-fields/definitions
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "code": "preferred_language",
+  "label": "Preferred Language",
+  "dataType": "SELECT",
+  "validation": {
+    "required": false
+  },
+  "visibility": "PUBLIC",
+  "uiHint": "DROPDOWN",
+  "isIndexed": true,
+  "required": false,
+  "sortOrder": 10,
+  "options": {
+    "options": ["English", "Luganda", "Swahili", "Runyankole"]
+  }
+}
+
+### Update Custom Field Definition
+PUT {{baseUrl}}/api/v1/custom-fields/definitions/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "code": "emergency_contact",
+  "label": "Emergency Contact Person",
+  "dataType": "TEXT",
+  "validation": {
+    "required": true,
+    "maxLength": 150
+  },
+  "visibility": "PUBLIC",
+  "uiHint": "TEXTBOX",
+  "isIndexed": true,
+  "required": true,
+  "sortOrder": 1,
+  "active": true
+}
+
+### Set Custom Field Values for Customer
+PUT {{baseUrl}}/api/v1/custom-fields/values/CUSTOMER/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "emergency_contact": "Mary Mutindo - +256-700-555123",
+  "preferred_language": "English",
+  "risk_category": "LOW",
+  "credit_score": 780,
+  "special_instructions": "VIP customer - handle with priority"
+}
+
+### Get Custom Field Values for Customer
+GET {{baseUrl}}/api/v1/custom-fields/values/CUSTOMER/1
+Authorization: {{authToken}}
+
+### Search Entities by Custom Fields
+POST {{baseUrl}}/api/v1/custom-fields/search
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "fieldValues": {
+    "risk_category": "HIGH",
+    "credit_score": 650
+  },
+  "searchOperator": "AND"
+}
+
+### Validate Custom Field Value
+POST {{baseUrl}}/api/v1/custom-fields/validate
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "fieldCode": "emergency_contact",
+  "entityType": "CUSTOMER",
+  "value": "John Doe - +256-700-123456"
+}
+
+### Get Custom Field Statistics
+GET {{baseUrl}}/api/v1/custom-fields/statistics/CUSTOMER
+Authorization: {{authToken}}
+
+###############################################################################
+# 15. ENHANCED CUSTOMER OPERATIONS
+###############################################################################
+
+### Create Customer with Full Details
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "firstName": "David",
+  "lastName": "Mukasa",
+  "email": "david.mukasa@email.com",
+  "phone": "+256-700-777888",
+  "nationalId": "CM12345678901234",
+  "dateOfBirth": "1985-03-15",
+  "gender": "MALE",
+  "customerType": "INDIVIDUAL",
+  "address": "Plot 123, Kampala Road",
+  "occupation": "Business Owner",
+  "monthlyIncome": 2000000,
+  "primaryBranchId": 2
+}
+
+### Update Customer
+PUT {{baseUrl}}/api/v1/customers/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "firstName": "John",
+  "lastName": "Mutindo Updated",
+  "email": "john.updated@mutindo.com",
+  "phone": "+256-700-111111",
+  "address": "Updated Address, Kampala",
+  "occupation": "Updated Occupation",
+  "monthlyIncome": 3000000
+}
+
+### Search Customers
+GET {{baseUrl}}/api/v1/customers/search?searchTerm=Mutindo&customerType=INDIVIDUAL&active=true
+Authorization: {{authToken}}
+
+### Update Customer KYC Status
+PATCH {{baseUrl}}/api/v1/customers/1/kyc?kycStatus=VERIFIED
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "documents": {
+    "nationalId": "verified",
+    "proofOfAddress": "verified"
+  }
+}
+
+### Check Customer Existence by National ID
+GET {{baseUrl}}/api/v1/customers/exists/national-id/CM12345678901234
+Authorization: {{authToken}}
+
+### Deactivate Customer
+DELETE {{baseUrl}}/api/v1/customers/1?reason=Customer request
+Authorization: {{authToken}}
+
+###############################################################################
+# 16. ENHANCED ACCOUNT OPERATIONS
+###############################################################################
+
+### Get Account by Account Number
+GET {{baseUrl}}/api/v1/accounts/number/ACC001
+Authorization: {{authToken}}
+
+### Get Customer Accounts
+GET {{baseUrl}}/api/v1/accounts/customer/1
+Authorization: {{authToken}}
+
+### Search Accounts
+GET {{baseUrl}}/api/v1/accounts/search?searchTerm=savings&customerId=1&productCode=SAV001&status=ACTIVE
+Authorization: {{authToken}}
+
+### Freeze Account
+PATCH {{baseUrl}}/api/v1/accounts/1/freeze?reason=Suspicious activity
+Authorization: {{authToken}}
+
+### Unfreeze Account
+PATCH {{baseUrl}}/api/v1/accounts/1/unfreeze
+Authorization: {{authToken}}
+
+### Close Account
+DELETE {{baseUrl}}/api/v1/accounts/1?reason=Customer request
+Authorization: {{authToken}}
+
+###############################################################################
+# 17. ENHANCED TRANSACTION OPERATIONS
+###############################################################################
+
+### Process Deposit with Real Posting Engine
+POST {{baseUrl}}/api/v1/transactions/deposits
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountNumber": "ACC001",
+  "amount": 100000,
+  "currency": "UGX",
+  "narration": "Cash deposit via API"
+}
+
+### Process Withdrawal with Real Posting Engine
+POST {{baseUrl}}/api/v1/transactions/withdrawals
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountNumber": "ACC001",
+  "amount": 50000,
+  "currency": "UGX",
+  "narration": "Cash withdrawal via API"
+}
+
+### Test Posting Engine Directly
+POST {{baseUrl}}/api/v1/transactions/test-posting
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "idempotencyKey": "test-123-456",
+  "postingType": "DEPOSIT",
+  "sourceType": "TRANSACTION",
+  "sourceId": 1,
+  "branchId": 2,
+  "userId": 1,
+  "postingDate": "2024-01-15",
+  "narration": "Test posting via API",
+  "currency": "UGX",
+  "entries": [
+    {
+      "glAccountCode": "1010",
+      "debitAmount": 100000,
+      "creditAmount": 0,
+      "narration": "Cash deposit - debit cash account",
+      "branchId": 2
+    }
+  ]
+}
+
+###############################################################################
+# 18. COMPREHENSIVE WORKFLOW TESTING
+###############################################################################
+
+### Complete Banking Workflow Test
+# Step 1: Login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "Admin!2025"
+}
+
+### Step 2: Create Customer with Custom Fields
+POST {{baseUrl}}/api/v1/customers
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "firstName": "Complete",
+  "lastName": "Workflow",
+  "email": "complete.workflow@test.com",
+  "phone": "+256-700-999000",
+  "nationalId": "CW98765432109876",
+  "customerType": "INDIVIDUAL",
+  "primaryBranchId": 2
+}
+
+### Step 3: Set Custom Fields for New Customer
+PUT {{baseUrl}}/api/v1/custom-fields/values/CUSTOMER/2
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "emergency_contact": "Emergency Person - +256-700-000999",
+  "preferred_language": "English",
+  "risk_category": "MEDIUM"
+}
+
+### Step 4: Create Account for Customer
+POST {{baseUrl}}/api/v1/accounts
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "customerId": 2,
+  "productId": 1,
+  "branchId": 2,
+  "currency": "UGX"
+}
+
+### Step 5: Make Initial Deposit
+POST {{baseUrl}}/api/v1/transactions/deposits
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountNumber": "GENERATED_ACCOUNT_NUMBER",
+  "amount": 500000,
+  "currency": "UGX",
+  "narration": "Initial deposit for new account"
+}
+
+### Step 6: Create Loan Application
+POST {{baseUrl}}/api/v1/loans
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "customerId": 2,
+  "productId": 1,
+  "branchId": 2,
+  "principalAmount": 1000000,
+  "interestRate": 12.0,
+  "termMonths": 12,
+  "purpose": "Business startup",
+  "collateralDescription": "Land title",
+  "collateralValue": 1500000
+}
+
+###############################################################################
 # NOTES:
-# - All endpoints should return JSON responses with success/error indicators
-# - Authentication returns JWT tokens (currently mock tokens)
-# - Account balances update in real-time within the session
-# - All data resets when application restarts (mock mode)
-# - Default test account ACC001 starts with 150,000 UGX balance
-# - Default customer CUST001 is "John Mutindo"
+# - All endpoints now support complete CRUD operations
+# - Authentication required for most endpoints (use JWT token)
+# - Real database integration with audit logging
+# - Custom fields system supports any entity type
+# - Enhanced search and filtering capabilities
+# - Complete loan lifecycle management
+# - Multi-level chart of accounts support
+# - Enterprise-grade validation and error handling
 ###############################################################################
