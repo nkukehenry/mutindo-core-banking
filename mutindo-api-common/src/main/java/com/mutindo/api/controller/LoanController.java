@@ -311,75 +311,7 @@ public class LoanController {
         }
     }
 
-    // Private helper methods
-
-    private Optional<LoanDto> findLoanById(Long loanId) {
-        return getMockLoans().stream()
-                .filter(loan -> loan.getId().equals(loanId))
-                .findFirst();
-    }
-
-    private String generateLoanAccountNumber() {
-        return "LN" + System.currentTimeMillis();
-    }
-
-    private String generateTransactionReference() {
-        return "TXN" + System.currentTimeMillis();
-    }
-
-    private String generateReceiptNumber() {
-        return "RCP" + System.currentTimeMillis();
-    }
-
-    private List<LoanDto> getMockLoans() {
-        return List.of(
-                LoanDto.builder()
-                        .id(1L)
-                        .customerId(1L)
-                        .productId(1L)
-                        .branchId(1L)
-                        .accountNumber("LN001")
-                        .principalAmount(BigDecimal.valueOf(5000000))
-                        .interestRate(BigDecimal.valueOf(12.5))
-                        .termMonths(24)
-                        .purpose("Business expansion")
-                        .collateralDescription("Vehicle - Toyota Hiace")
-                        .collateralValue(BigDecimal.valueOf(8000000))
-                        .status("ACTIVE")
-                        .outstandingBalance(BigDecimal.valueOf(3000000))
-                        .disbursedAmount(BigDecimal.valueOf(5000000))
-                        .totalPaid(BigDecimal.valueOf(2000000))
-                        .applicationDate(LocalDate.now().minusMonths(6))
-                        .approvalDate(LocalDate.now().minusMonths(6).plusDays(3))
-                        .disbursementDate(LocalDate.now().minusMonths(6).plusDays(5))
-                        .maturityDate(LocalDate.now().plusMonths(18))
-                        .createdAt(LocalDateTime.now().minusMonths(6))
-                        .build()
-        );
-    }
-
-    private List<LoanScheduleDto> generateMockSchedule(Long loanId) {
-        return List.of(
-                LoanScheduleDto.builder()
-                        .loanId(loanId)
-                        .installmentNumber(1)
-                        .dueDate(LocalDate.now().plusMonths(1))
-                        .principalAmount(BigDecimal.valueOf(200000))
-                        .interestAmount(BigDecimal.valueOf(50000))
-                        .totalAmount(BigDecimal.valueOf(250000))
-                        .status("PENDING")
-                        .build(),
-                LoanScheduleDto.builder()
-                        .loanId(loanId)
-                        .installmentNumber(2)
-                        .dueDate(LocalDate.now().plusMonths(2))
-                        .principalAmount(BigDecimal.valueOf(200000))
-                        .interestAmount(BigDecimal.valueOf(48000))
-                        .totalAmount(BigDecimal.valueOf(248000))
-                        .status("PENDING")
-                        .build()
-        );
-    }
+    // All mock data removed - real loan service implementation required
 
     // DTOs for Loan operations
 
