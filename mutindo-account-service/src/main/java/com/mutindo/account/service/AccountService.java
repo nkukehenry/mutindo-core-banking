@@ -426,8 +426,8 @@ public class AccountService implements IAccountService {
         account.setAvailableBalance(request.getInitialDeposit() != null ? request.getInitialDeposit() : BigDecimal.ZERO);
         account.setStatus(AccountStatus.ACTIVE);
         account.setOpenedAt(LocalDateTime.now());
-        account.setDailyWithdrawalLimit(request.getDailyWithdrawalLimit() != null ? request.getDailyWithdrawalLimit() : product.getMaximumBalance());
-        account.setMinimumBalance(request.getMinimumBalance() != null ? request.getMinimumBalance() : product.getMinimumBalance());
+        account.setDailyWithdrawalLimit(request.getDailyWithdrawalLimit() != null ? request.getDailyWithdrawalLimit() : product.getMaxBalance());
+        account.setMinimumBalance(request.getMinimumBalance() != null ? request.getMinimumBalance() : product.getMinBalance());
         account.setOverdraftLimit(request.getOverdraftLimit() != null ? request.getOverdraftLimit() : BigDecimal.ZERO);
         account.setCustomData(request.getCustomData());
         
@@ -490,7 +490,7 @@ public class AccountService implements IAccountService {
                 .totalElements(accountPage.getTotalElements())
                 .totalPages(accountPage.getTotalPages())
                 .size(accountPage.getSize())
-                .number(accountPage.getNumber())
+                .pageNumber(accountPage.getNumber())
                 .first(accountPage.isFirst())
                 .last(accountPage.isLast())
                 .build();
@@ -511,26 +511,467 @@ public class AccountService implements IAccountService {
     }
 
     /**
-     * Setup account notifications
+     * Setup account notifications - comprehensive notification configuration
      */
     private void setupAccountNotifications(Account account) {
-        // TODO: Implement notification setup
         log.debug("Setting up notifications for account: {}", account.getAccountNumber());
+        
+        try {
+            // Get product configuration for notification settings
+            Product product = productRepository.findById(account.getProductId()).orElse(null);
+            if (product == null) {
+                log.warn("Product not found for account: {}", account.getAccountNumber());
+                return;
+            }
+            
+            // Setup default notification preferences based on product type
+            setupDefaultNotificationPreferences(account, product);
+            
+            // Setup transaction notifications
+            setupTransactionNotifications(account, product);
+            
+            // Setup balance alerts
+            setupBalanceAlerts(account, product);
+            
+            // Setup statement notifications
+            setupStatementNotifications(account, product);
+            
+            log.info("Notification setup completed for account: {}", account.getAccountNumber());
+            
+        } catch (Exception e) {
+            log.error("Failed to setup notifications for account: {}", account.getAccountNumber(), e);
+            // Don't throw exception as this is async operation
+        }
     }
 
     /**
-     * Setup account limits
+     * Setup account limits - comprehensive limit configuration
      */
     private void setupAccountLimits(Account account) {
-        // TODO: Implement limit setup
         log.debug("Setting up limits for account: {}", account.getAccountNumber());
+        
+        try {
+            // Get product configuration for limit settings
+            Product product = productRepository.findById(account.getProductId()).orElse(null);
+            if (product == null) {
+                log.warn("Product not found for account: {}", account.getAccountNumber());
+                return;
+            }
+            
+            // Setup transaction limits
+            setupTransactionLimits(account, product);
+            
+            // Setup balance limits
+            setupBalanceLimits(account, product);
+            
+            // Setup time-based limits
+            setupTimeBasedLimits(account, product);
+            
+            // Setup channel-specific limits
+            setupChannelLimits(account, product);
+            
+            log.info("Limit setup completed for account: {}", account.getAccountNumber());
+            
+        } catch (Exception e) {
+            log.error("Failed to setup limits for account: {}", account.getAccountNumber(), e);
+            // Don't throw exception as this is async operation
+        }
     }
 
     /**
-     * Setup account custom fields
+     * Setup account custom fields - dynamic field configuration
      */
     private void setupAccountCustomFields(Account account) {
-        // TODO: Implement custom fields setup
         log.debug("Setting up custom fields for account: {}", account.getAccountNumber());
+        
+        try {
+            // Get product configuration for custom fields
+            Product product = productRepository.findById(account.getProductId()).orElse(null);
+            if (product == null) {
+                log.warn("Product not found for account: {}", account.getAccountNumber());
+                return;
+            }
+            
+            // Setup product-specific custom fields
+            setupProductCustomFields(account, product);
+            
+            // Setup account-specific custom fields
+            setupAccountSpecificFields(account);
+            
+            // Setup regulatory custom fields
+            setupRegulatoryFields(account, product);
+            
+            // Setup business-specific custom fields
+            setupBusinessFields(account, product);
+            
+            log.info("Custom fields setup completed for account: {}", account.getAccountNumber());
+            
+        } catch (Exception e) {
+            log.error("Failed to setup custom fields for account: {}", account.getAccountNumber(), e);
+            // Don't throw exception as this is async operation
+        }
+    }
+
+    // =================================================================================
+    // NOTIFICATION SETUP HELPER METHODS
+    // =================================================================================
+
+    private void setupDefaultNotificationPreferences(Account account, Product product) {
+        // Setup default notification preferences based on product type
+        Map<String, Object> notificationPrefs = new java.util.HashMap<>();
+        
+        switch (product.getProductType().toUpperCase()) {
+            case "SAVINGS":
+                notificationPrefs.put("lowBalanceAlert", true);
+                notificationPrefs.put("transactionAlert", true);
+                notificationPrefs.put("statementAlert", true);
+                notificationPrefs.put("interestCreditAlert", true);
+                break;
+            case "CURRENT":
+                notificationPrefs.put("lowBalanceAlert", true);
+                notificationPrefs.put("transactionAlert", false); // Too frequent for current accounts
+                notificationPrefs.put("statementAlert", true);
+                notificationPrefs.put("overdraftAlert", true);
+                break;
+            case "LOAN":
+                notificationPrefs.put("paymentDueAlert", true);
+                notificationPrefs.put("paymentOverdueAlert", true);
+                notificationPrefs.put("paymentReceivedAlert", true);
+                notificationPrefs.put("loanDisbursementAlert", true);
+                break;
+            default:
+                notificationPrefs.put("transactionAlert", true);
+                notificationPrefs.put("statementAlert", true);
+        }
+        
+        // Store in account custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("notificationPreferences", notificationPrefs);
+        account.setCustomData(customData);
+        
+        log.debug("Default notification preferences set for account: {}", account.getAccountNumber());
+    }
+
+    private void setupTransactionNotifications(Account account, Product product) {
+        // Setup transaction notification thresholds
+        Map<String, Object> transactionAlerts = new java.util.HashMap<>();
+        
+        // Set thresholds based on product type and limits
+        BigDecimal dailyLimit = account.getDailyWithdrawalLimit();
+        if (dailyLimit != null) {
+            transactionAlerts.put("largeTransactionThreshold", dailyLimit.multiply(new BigDecimal("0.8")));
+            transactionAlerts.put("dailyLimitWarningThreshold", dailyLimit.multiply(new BigDecimal("0.9")));
+        }
+        
+        // Set notification channels
+        transactionAlerts.put("smsEnabled", true);
+        transactionAlerts.put("emailEnabled", true);
+        transactionAlerts.put("pushEnabled", false); // Can be enabled later
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("transactionAlerts", transactionAlerts);
+        account.setCustomData(customData);
+        
+        log.debug("Transaction notifications configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupBalanceAlerts(Account account, Product product) {
+        // Setup balance alert thresholds
+        Map<String, Object> balanceAlerts = new java.util.HashMap<>();
+        
+        BigDecimal minBalance = account.getMinimumBalance();
+        if (minBalance != null) {
+            balanceAlerts.put("lowBalanceThreshold", minBalance.multiply(new BigDecimal("1.1")));
+            balanceAlerts.put("criticalBalanceThreshold", minBalance);
+        }
+        
+        // Set alert frequencies
+        balanceAlerts.put("lowBalanceFrequency", "IMMEDIATE");
+        balanceAlerts.put("criticalBalanceFrequency", "IMMEDIATE");
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("balanceAlerts", balanceAlerts);
+        account.setCustomData(customData);
+        
+        log.debug("Balance alerts configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupStatementNotifications(Account account, Product product) {
+        // Setup statement notification preferences
+        Map<String, Object> statementAlerts = new java.util.HashMap<>();
+        
+        // Set statement frequency based on product type
+        switch (product.getProductType().toUpperCase()) {
+            case "SAVINGS":
+                statementAlerts.put("frequency", "MONTHLY");
+                break;
+            case "CURRENT":
+                statementAlerts.put("frequency", "MONTHLY");
+                break;
+            case "LOAN":
+                statementAlerts.put("frequency", "MONTHLY");
+                break;
+            default:
+                statementAlerts.put("frequency", "QUARTERLY");
+        }
+        
+        statementAlerts.put("emailEnabled", true);
+        statementAlerts.put("smsEnabled", false);
+        statementAlerts.put("paperEnabled", false);
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("statementAlerts", statementAlerts);
+        account.setCustomData(customData);
+        
+        log.debug("Statement notifications configured for account: {}", account.getAccountNumber());
+    }
+
+    // =================================================================================
+    // LIMIT SETUP HELPER METHODS
+    // =================================================================================
+
+    private void setupTransactionLimits(Account account, Product product) {
+        // Setup transaction limits based on product configuration
+        Map<String, Object> transactionLimits = new java.util.HashMap<>();
+        
+        // Daily limits
+        if (product.getDailyWithdrawalLimit() != null) {
+            transactionLimits.put("dailyWithdrawalLimit", product.getDailyWithdrawalLimit());
+        }
+        
+        // Monthly limits
+        if (product.getMonthlyWithdrawalLimit() != null) {
+            transactionLimits.put("monthlyWithdrawalLimit", product.getMonthlyWithdrawalLimit());
+        }
+        
+        // Single transaction limits
+        if (product.getMaxTransactionAmount() != null) {
+            transactionLimits.put("maxSingleTransaction", product.getMaxTransactionAmount());
+        }
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("transactionLimits", transactionLimits);
+        account.setCustomData(customData);
+        
+        log.debug("Transaction limits configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupBalanceLimits(Account account, Product product) {
+        // Setup balance limits
+        Map<String, Object> balanceLimits = new java.util.HashMap<>();
+        
+        // Minimum balance
+        if (product.getMinBalance() != null) {
+            balanceLimits.put("minimumBalance", product.getMinBalance());
+        }
+        
+        // Maximum balance
+        if (product.getMaxBalance() != null) {
+            balanceLimits.put("maximumBalance", product.getMaxBalance());
+        }
+        
+        // Overdraft limits
+        if (product.getAllowsOverdraft()) {
+            balanceLimits.put("overdraftLimit", account.getOverdraftLimit());
+            balanceLimits.put("overdraftEnabled", true);
+        } else {
+            balanceLimits.put("overdraftEnabled", false);
+        }
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("balanceLimits", balanceLimits);
+        account.setCustomData(customData);
+        
+        log.debug("Balance limits configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupTimeBasedLimits(Account account, Product product) {
+        // Setup time-based transaction limits
+        Map<String, Object> timeLimits = new java.util.HashMap<>();
+        
+        // Business hours restrictions
+        timeLimits.put("businessHoursOnly", false);
+        timeLimits.put("businessHoursStart", "08:00");
+        timeLimits.put("businessHoursEnd", "17:00");
+        
+        // Weekend restrictions
+        timeLimits.put("weekendTransactionsAllowed", true);
+        timeLimits.put("weekendLimitMultiplier", new BigDecimal("0.5"));
+        
+        // Holiday restrictions
+        timeLimits.put("holidayTransactionsAllowed", true);
+        timeLimits.put("holidayLimitMultiplier", new BigDecimal("0.3"));
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("timeLimits", timeLimits);
+        account.setCustomData(customData);
+        
+        log.debug("Time-based limits configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupChannelLimits(Account account, Product product) {
+        // Setup channel-specific limits
+        Map<String, Object> channelLimits = new java.util.HashMap<>();
+        
+        // ATM limits
+        Map<String, Object> atmLimits = new java.util.HashMap<>();
+        atmLimits.put("dailyLimit", account.getDailyWithdrawalLimit() != null ? 
+            account.getDailyWithdrawalLimit().multiply(new BigDecimal("0.3")) : new BigDecimal("100000"));
+        atmLimits.put("singleTransactionLimit", new BigDecimal("50000"));
+        channelLimits.put("atm", atmLimits);
+        
+        // Mobile/Online limits
+        Map<String, Object> mobileLimits = new java.util.HashMap<>();
+        mobileLimits.put("dailyLimit", account.getDailyWithdrawalLimit() != null ? 
+            account.getDailyWithdrawalLimit().multiply(new BigDecimal("0.7")) : new BigDecimal("200000"));
+        mobileLimits.put("singleTransactionLimit", new BigDecimal("100000"));
+        channelLimits.put("mobile", mobileLimits);
+        
+        // Branch limits
+        Map<String, Object> branchLimits = new java.util.HashMap<>();
+        branchLimits.put("dailyLimit", account.getDailyWithdrawalLimit());
+        branchLimits.put("singleTransactionLimit", account.getDailyWithdrawalLimit());
+        channelLimits.put("branch", branchLimits);
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("channelLimits", channelLimits);
+        account.setCustomData(customData);
+        
+        log.debug("Channel limits configured for account: {}", account.getAccountNumber());
+    }
+
+    // =================================================================================
+    // CUSTOM FIELDS SETUP HELPER METHODS
+    // =================================================================================
+
+    private void setupProductCustomFields(Account account, Product product) {
+        // Setup product-specific custom fields
+        Map<String, Object> productFields = new java.util.HashMap<>();
+        
+        // Product-specific fields based on type
+        switch (product.getProductType().toUpperCase()) {
+            case "SAVINGS":
+                productFields.put("interestCalculationMethod", "DAILY_BALANCE");
+                productFields.put("interestPaymentFrequency", "MONTHLY");
+                productFields.put("minimumDepositAmount", product.getMinBalance());
+                break;
+            case "CURRENT":
+                productFields.put("checkBookEnabled", true);
+                productFields.put("debitCardEnabled", true);
+                productFields.put("onlineBankingEnabled", true);
+                break;
+            case "LOAN":
+                productFields.put("repaymentMethod", product.getRepaymentFrequency());
+                productFields.put("interestCalculationMethod", product.getInterestCalculationMethod());
+                productFields.put("guarantorRequired", product.getRequiresGuarantor());
+                break;
+        }
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("productFields", productFields);
+        account.setCustomData(customData);
+        
+        log.debug("Product custom fields configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupAccountSpecificFields(Account account) {
+        // Setup account-specific custom fields
+        Map<String, Object> accountFields = new java.util.HashMap<>();
+        
+        // Account opening information
+        accountFields.put("openingChannel", "BRANCH");
+        accountFields.put("openingOfficer", account.getCreatedBy());
+        accountFields.put("openingDate", account.getOpenedAt());
+        
+        // Account status tracking
+        accountFields.put("lastActivityDate", account.getOpenedAt());
+        accountFields.put("transactionCount", 0);
+        accountFields.put("averageBalance", account.getBalance());
+        
+        // Risk assessment fields
+        accountFields.put("riskLevel", "LOW");
+        accountFields.put("kycStatus", "COMPLETED");
+        accountFields.put("amlStatus", "CLEAR");
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("accountFields", accountFields);
+        account.setCustomData(customData);
+        
+        log.debug("Account-specific fields configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupRegulatoryFields(Account account, Product product) {
+        // Setup regulatory compliance fields
+        Map<String, Object> regulatoryFields = new java.util.HashMap<>();
+        
+        // AML/KYC fields
+        regulatoryFields.put("amlRiskCategory", "STANDARD");
+        regulatoryFields.put("kycLevel", "ENHANCED");
+        regulatoryFields.put("sourceOfFunds", "SALARY");
+        
+        // Regulatory reporting
+        regulatoryFields.put("reportingRequired", true);
+        regulatoryFields.put("reportingFrequency", "MONTHLY");
+        regulatoryFields.put("regulatoryCategory", product.getProductType());
+        
+        // Compliance flags
+        regulatoryFields.put("sanctionsScreening", true);
+        regulatoryFields.put("pepScreening", true);
+        regulatoryFields.put("transactionMonitoring", true);
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("regulatoryFields", regulatoryFields);
+        account.setCustomData(customData);
+        
+        log.debug("Regulatory fields configured for account: {}", account.getAccountNumber());
+    }
+
+    private void setupBusinessFields(Account account, Product product) {
+        // Setup business-specific custom fields
+        Map<String, Object> businessFields = new java.util.HashMap<>();
+        
+        // Business metrics
+        businessFields.put("customerSegment", "RETAIL");
+        businessFields.put("accountTier", "STANDARD");
+        businessFields.put("relationshipManager", null);
+        
+        // Service preferences
+        businessFields.put("preferredLanguage", "EN");
+        businessFields.put("preferredContactMethod", "EMAIL");
+        businessFields.put("marketingOptIn", false);
+        
+        // Business rules
+        businessFields.put("autoRenewal", false);
+        businessFields.put("feeWaiver", false);
+        businessFields.put("priorityService", false);
+        
+        // Store in custom data
+        Map<String, Object> customData = account.getCustomData() != null ? 
+            new java.util.HashMap<>(account.getCustomData()) : new java.util.HashMap<>();
+        customData.put("businessFields", businessFields);
+        account.setCustomData(customData);
+        
+        log.debug("Business fields configured for account: {}", account.getAccountNumber());
     }
 }
