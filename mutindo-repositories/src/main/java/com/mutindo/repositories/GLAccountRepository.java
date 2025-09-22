@@ -75,4 +75,11 @@ public interface GLAccountRepository extends JpaRepository<GLAccount, Long> {
            "FROM gl_accounts p JOIN account_path ap ON p.id = ap.parent_id) " +
            "SELECT * FROM account_path ORDER BY depth DESC", nativeQuery = true)
     List<Object[]> getAccountHierarchyPath(@Param("accountId") Long accountId);
+
+    // Count methods for statistics
+    @Query("SELECT COUNT(g) FROM GLAccount g WHERE g.type = :type AND g.active = true")
+    long countByTypeAndActiveTrue(@Param("type") GLAccountType type);
+
+    @Query("SELECT COUNT(g) FROM GLAccount g WHERE g.active = true")
+    long countByActiveTrue();
 }
