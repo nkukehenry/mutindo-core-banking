@@ -72,6 +72,7 @@
         <module>mutindo-otp-service</module>
         <module>mutindo-customer-service</module>
         <module>mutindo-account-service</module>
+        <module>mutindo-branch-service</module>
         
         <!-- 📋 TO BE IMPLEMENTED - Core Services -->
         <!-- <module>cbs-transaction-service</module> -->

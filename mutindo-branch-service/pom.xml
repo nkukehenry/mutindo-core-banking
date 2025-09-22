@@ -10,34 +10,29 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>cbs-api-common</artifactId>
-    <name>CBS API Common</name>
-    <description>Common API components - filters, exception handlers, security</description>
+    <artifactId>cbs-branch-service</artifactId>
+    <name>CBS Branch Service</name>
+    <description>Branch management service with multi-branch support and context handling</description>
+
     <properties>
         <mutindo.version>1.0.0-SNAPSHOT</mutindo.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- Spring Data for Pageable support -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <!-- CBS Infrastructure - Reusing existing components -->
@@ -55,57 +50,39 @@
         
         <dependency>
             <groupId>com.mutindo</groupId>
+            <artifactId>cbs-validation</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
             <artifactId>cbs-logging</artifactId>
             <version>${mutindo.version}</version>
         </dependency>
         
         <dependency>
             <groupId>com.mutindo</groupId>
-            <artifactId>cbs-jwt</artifactId>
+            <artifactId>cbs-encryption</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-redis</artifactId>
             <version>${mutindo.version}</version>
         </dependency>
 
-        <!-- Service Dependencies -->
+        <!-- CBS Data Layer -->
         <dependency>
             <groupId>com.mutindo</groupId>
-            <artifactId>cbs-customer-service</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mutindo</groupId>
-            <artifactId>cbs-account-service</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mutindo</groupId>
-            <artifactId>cbs-auth-service</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mutindo</groupId>
-            <artifactId>cbs-posting-engine</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mutindo</groupId>
-            <artifactId>cbs-chart-of-accounts</artifactId>
+            <artifactId>cbs-entities</artifactId>
             <version>${mutindo.version}</version>
         </dependency>
         
         <dependency>
             <groupId>com.mutindo</groupId>
-            <artifactId>cbs-branch-service</artifactId>
+            <artifactId>cbs-repositories</artifactId>
             <version>${mutindo.version}</version>
-        </dependency>
-
-        <!-- OpenAPI Documentation -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         </dependency>
 
         <!-- Utilities -->
@@ -113,6 +90,18 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

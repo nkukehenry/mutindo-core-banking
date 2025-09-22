@@ -32,4 +32,7 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     @Query("SELECT COUNT(b) FROM Branch b WHERE b.active = true")
     long countActiveBranches();
+
+    // Additional methods for branch service
+    Page<Branch> findByActiveFalse(Pageable pageable);
 }

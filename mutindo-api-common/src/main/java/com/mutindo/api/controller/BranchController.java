@@ -2,13 +2,16 @@ package com.mutindo.api.controller;
 
 import com.mutindo.common.dto.BaseResponse;
 import com.mutindo.common.dto.PaginatedResponse;
+import com.mutindo.branch.dto.BranchDto;
+import com.mutindo.branch.dto.BranchSearchRequest;
+import com.mutindo.branch.dto.CreateBranchRequest;
+import com.mutindo.branch.dto.UpdateBranchRequest;
+import com.mutindo.branch.service.IBranchService;
 import com.mutindo.logging.annotation.AuditLog;
 import com.mutindo.logging.annotation.PerformanceLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Builder;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +35,7 @@ import java.util.Optional;
 @Tag(name = "Branches", description = "Branch management operations")
 public class BranchController {
 
-    // Service will be injected when IBranchService is implemented
-    // For now, throwing exceptions to indicate real service needed
+    private final IBranchService branchService;
 
     /**
      * Create new branch
@@ -48,9 +49,14 @@ public class BranchController {
         log.info("Creating branch via API - Name: {} - Code: {}", request.getName(), request.getCode());
 
         try {
-            // TODO: Replace with real service call
-            // BranchDto branch = branchService.createBranch(request);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            BranchDto branch = branchService.createBranch(request);
+            
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(BaseResponse.<BranchDto>builder()
+                            .success(true)
+                            .message("Branch created successfully")
+                            .data(branch)
+                            .build());
             
         } catch (Exception e) {
             log.error("Failed to create branch via API", e);
@@ -69,10 +75,18 @@ public class BranchController {
         log.debug("Getting branch via API: {}", branchId);
 
         try {
-            // TODO: Replace with real service call
-            // Long branchIdLong = Long.parseLong(branchId);
-            // Optional<BranchDto> branchOpt = branchService.getBranchById(branchIdLong);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            Long branchIdLong = Long.parseLong(branchId);
+            Optional<BranchDto> branchOpt = branchService.getBranchById(branchIdLong);
+            
+            if (branchOpt.isPresent()) {
+                return ResponseEntity.ok(BaseResponse.<BranchDto>builder()
+                        .success(true)
+                        .message("Branch retrieved successfully")
+                        .data(branchOpt.get())
+                        .build());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
             
         } catch (Exception e) {
             log.error("Failed to get branch via API: {}", branchId, e);
@@ -95,10 +109,14 @@ public class BranchController {
         log.info("Updating branch via API: {}", branchId);
 
         try {
-            // TODO: Replace with real service call
-            // Long branchIdLong = Long.parseLong(branchId);
-            // BranchDto updatedBranch = branchService.updateBranch(branchIdLong, request);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            Long branchIdLong = Long.parseLong(branchId);
+            BranchDto updatedBranch = branchService.updateBranch(branchIdLong, request);
+            
+            return ResponseEntity.ok(BaseResponse.<BranchDto>builder()
+                    .success(true)
+                    .message("Branch updated successfully")
+                    .data(updatedBranch)
+                    .build());
             
         } catch (Exception e) {
             log.error("Failed to update branch via API: {}", branchId, e);
@@ -120,9 +138,13 @@ public class BranchController {
         log.debug("Getting all branches via API - Active: {}", active);
 
         try {
-            // TODO: Replace with real service call
-            // PaginatedResponse<BranchDto> response = branchService.getAllBranches(active, pageable);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            PaginatedResponse<BranchDto> response = branchService.getAllBranches(active, pageable);
+            
+            return ResponseEntity.ok(BaseResponse.<PaginatedResponse<BranchDto>>builder()
+                    .success(true)
+                    .message("Branches retrieved successfully")
+                    .data(response)
+                    .build());
             
         } catch (Exception e) {
             log.error("Failed to get branches via API", e);
@@ -139,16 +161,26 @@ public class BranchController {
     @PerformanceLog
     public ResponseEntity<BaseResponse<PaginatedResponse<BranchDto>>> searchBranches(
             @RequestParam(required = false) String searchTerm,
-            @RequestParam(required = false) String region,
+            @RequestParam(required = false) String timezone,
             @RequestParam(required = false) Boolean active,
             @PageableDefault(size = 20) Pageable pageable) {
         
         log.debug("Searching branches via API - Term: {}", searchTerm);
 
         try {
-            // TODO: Replace with real service call
-            // PaginatedResponse<BranchDto> response = branchService.searchBranches(searchTerm, region, active, pageable);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            BranchSearchRequest searchRequest = BranchSearchRequest.builder()
+                    .searchTerm(searchTerm)
+                    .timezone(timezone)
+                    .active(active)
+                    .build();
+                    
+            PaginatedResponse<BranchDto> response = branchService.searchBranches(searchRequest, pageable);
+            
+            return ResponseEntity.ok(BaseResponse.<PaginatedResponse<BranchDto>>builder()
+                    .success(true)
+                    .message("Branch search completed successfully")
+                    .data(response)
+                    .build());
             
         } catch (Exception e) {
             log.error("Failed to search branches via API", e);
@@ -170,9 +202,13 @@ public class BranchController {
         log.info("Deactivating branch via API: {} - Reason: {}", branchId, reason);
 
         try {
-            // TODO: Replace with real service call
-            // branchService.deactivateBranch(Long.parseLong(branchId), reason);
-            throw new UnsupportedOperationException("Branch service not yet implemented - real database integration required");
+            Long branchIdLong = Long.parseLong(branchId);
+            branchService.deactivateBranch(branchIdLong, reason);
+            
+            return ResponseEntity.ok(BaseResponse.<Void>builder()
+                    .success(true)
+                    .message("Branch deactivated successfully")
+                    .build());
             
         } catch (Exception e) {
             log.error("Failed to deactivate branch via API: {}", branchId, e);
@@ -180,48 +216,4 @@ public class BranchController {
         }
     }
 
-    // All mock data removed - real service implementation required
-
-    // DTOs for Branch operations
-
-    @Data
-    @Builder
-    public static class BranchDto {
-        private Long id;
-        private String name;
-        private String code;
-        private String address;
-        private String phone;
-        private String email;
-        private String managerName;
-        private String region;
-        private Boolean active;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-    }
-
-    @Data
-    @Builder
-    public static class CreateBranchRequest {
-        private String name;
-        private String code;
-        private String address;
-        private String phone;
-        private String email;
-        private String managerName;
-        private String region;
-    }
-
-    @Data
-    @Builder
-    public static class UpdateBranchRequest {
-        private String name;
-        private String code;
-        private String address;
-        private String phone;
-        private String email;
-        private String managerName;
-        private String region;
-        private Boolean active;
-    }
 }
