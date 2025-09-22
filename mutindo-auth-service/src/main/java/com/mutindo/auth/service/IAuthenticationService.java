@@ -67,4 +67,10 @@ public interface IAuthenticationService {
      * @return true if user is valid and active
      */
     boolean isUserValid(Long userId);
+    
+    /**
+     * Force logout user from all sessions (security operation)
+     * @param userId User ID to force logout
+     */
+    void forceLogoutUser(Long userId);
 }

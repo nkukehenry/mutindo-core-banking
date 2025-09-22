@@ -39,7 +39,8 @@ public class AuthenticationService implements IAuthenticationService {
     private final IEncryptionService encryptionService;
     private final IJwtService jwtService;
     private final UserMapper userMapper;
-    private final IUserRoleService userRoleService; // To be injected
+    private final IUserRoleService userRoleService;
+    private final ITokenBlacklistService tokenBlacklistService;
 
     private static final int MAX_FAILED_ATTEMPTS = 5;
     private static final int LOCKOUT_DURATION_MINUTES = 30;
@@ -228,14 +229,26 @@ public class AuthenticationService implements IAuthenticationService {
     public void logoutUser(Long userId, String accessToken) {
         log.info("Logging out user: {}", userId);
 
-        // Add token to blacklist (would be implemented with Redis)
-        // For now, we'll just log the logout
-        // tokenBlacklistService.blacklistToken(accessToken);
+        try {
+            // Extract token expiration from JWT
+            JwtClaims claims = jwtService.validateAndExtractClaims(accessToken);
+            Long expiresAt = claims.getExpiresAt() != null ? 
+                claims.getExpiresAt().getEpochSecond() : null;
 
-        // Clear branch context
-        BranchContextHolder.clearContext();
+            // Add token to blacklist
+            tokenBlacklistService.blacklistToken(accessToken, userId, expiresAt);
 
-        log.info("User logged out successfully: {}", userId);
+            // Clear branch context
+            BranchContextHolder.clearContext();
+
+            log.info("User logged out successfully: {}", userId);
+            
+        } catch (Exception e) {
+            log.error("Failed to logout user: {}", userId, e);
+            // Still clear context even if blacklisting fails
+            BranchContextHolder.clearContext();
+            throw new BusinessException("Logout failed", "LOGOUT_ERROR");
+        }
     }
 
     /**
@@ -248,6 +261,31 @@ public class AuthenticationService implements IAuthenticationService {
                 .map(user -> user.getActive() && 
                            (user.getLockedUntil() == null || user.getLockedUntil().isBefore(LocalDateTime.now())))
                 .orElse(false);
+    }
+
+    /**
+     * Force logout user from all sessions (security operation)
+     */
+    @Override
+    @Transactional
+    @AuditLog
+    @CacheEvict(value = "userValidation", key = "#userId")
+    public void forceLogoutUser(Long userId) {
+        log.info("Force logging out user from all sessions: {}", userId);
+
+        try {
+            // Blacklist all user tokens
+            tokenBlacklistService.blacklistAllUserTokens(userId);
+
+            // Clear branch context
+            BranchContextHolder.clearContext();
+
+            log.info("User force logged out successfully from all sessions: {}", userId);
+            
+        } catch (Exception e) {
+            log.error("Failed to force logout user: {}", userId, e);
+            throw new BusinessException("Force logout failed", "FORCE_LOGOUT_ERROR");
+        }
     }
 
     // Private helper methods (small and focused)

@@ -1,9 +1,11 @@
 package com.mutindo.auth.service;
 
+import com.mutindo.entities.Role;
+
 import java.util.List;
 
 /**
- * User role service interface - small and focused on role management
+ * User role service interface - comprehensive role and permission management
  */
 public interface IUserRoleService {
     
@@ -42,4 +44,37 @@ public interface IUserRoleService {
      * @return true if user has permission
      */
     boolean hasPermission(Long userId, String permission);
+    
+    /**
+     * Grant direct permission to user (override role permissions)
+     * @param userId User ID
+     * @param permissionId Permission ID to grant
+     */
+    void grantPermissionToUser(Long userId, String permissionId);
+    
+    /**
+     * Deny direct permission to user (override role permissions)
+     * @param userId User ID
+     * @param permissionId Permission ID to deny
+     */
+    void denyPermissionToUser(Long userId, String permissionId);
+    
+    /**
+     * Remove direct permission from user
+     * @param userId User ID
+     * @param permissionId Permission ID to remove
+     */
+    void removePermissionFromUser(Long userId, String permissionId);
+    
+    /**
+     * Get all available roles
+     * @return List of active roles
+     */
+    List<Role> getAllActiveRoles();
+    
+    /**
+     * Get all available permissions
+     * @return List of active permission names
+     */
+    List<String> getAllActivePermissions();
 }
