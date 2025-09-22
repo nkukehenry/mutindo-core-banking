@@ -74,22 +74,9 @@
         <module>mutindo-account-service</module>
         <module>mutindo-branch-service</module>
         <module>mutindo-settings-service</module>
-        
-        <!-- 📋 TO BE IMPLEMENTED - Core Services -->
-        <!-- <module>cbs-transaction-service</module> -->
-        <!-- <module>cbs-loan-service</module> -->
-        <!-- <module>cbs-group-service</module> -->
-        
-        <!-- 📋 TO BE IMPLEMENTED - Advanced Features -->
-        <!-- <module>cbs-biometric-service</module> -->
-        <!-- <module>cbs-kyc-service</module> -->
-        <!-- <module>cbs-workflow-engine</module> -->
-        <!-- <module>cbs-reporting-service</module> -->
-        <!-- <module>cbs-integration-services</module> -->
-        
+        <module>mutindo-reporting-service</module>
         <!-- ✅ IMPLEMENTED - API Layer -->
         <module>mutindo-api-common</module>
-        
         <!-- ✅ IMPLEMENTED - Application -->
         <module>mutindo-application</module>
     </modules>
