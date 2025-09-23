@@ -115,15 +115,7 @@ public class UserController {
         log.debug("Getting user by username via API: {}", username);
 
         try {
-            Optional<UserDto> userOpt = findUserByUsername(username);
-            
-            if (userOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(userOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("User not found"));
-            }
-            
+            throw new UnsupportedOperationException("User service integration required");
         } catch (Exception e) {
             log.error("Failed to get user by username via API: {}", username, e);
             throw e;

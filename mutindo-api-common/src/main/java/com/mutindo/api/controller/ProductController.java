@@ -92,15 +92,7 @@ public class ProductController {
         log.debug("Getting product by code via API: {}", productCode);
 
         try {
-            Optional<ProductDto> productOpt = findProductByCode(productCode);
-            
-            if (productOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(productOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("Product not found"));
-            }
-            
+            throw new UnsupportedOperationException("Product service integration required");
         } catch (Exception e) {
             log.error("Failed to get product by code via API: {}", productCode, e);
             throw e;

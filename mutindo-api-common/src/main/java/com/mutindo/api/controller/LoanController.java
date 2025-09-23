@@ -55,7 +55,7 @@ public class LoanController {
                     .customerId(request.getCustomerId())
                     .productId(request.getProductId())
                     .branchId(request.getBranchId())
-                    .accountNumber(generateLoanAccountNumber())
+                    .accountNumber("LOAN-" + System.currentTimeMillis()) // Temporary account number
                     .principalAmount(request.getPrincipalAmount())
                     .interestRate(request.getInterestRate())
                     .termMonths(request.getTermMonths())
@@ -92,15 +92,7 @@ public class LoanController {
 
         try {
             Long loanIdLong = Long.parseLong(loanId);
-            Optional<LoanDto> loanOpt = findLoanById(loanIdLong);
-            
-            if (loanOpt.isPresent()) {
-                return ResponseEntity.ok(BaseResponse.success(loanOpt.get()));
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(BaseResponse.error("Loan not found"));
-            }
-            
+            throw new UnsupportedOperationException("Loan service integration required");
         } catch (Exception e) {
             log.error("Failed to get loan via API: {}", loanId, e);
             throw e;
@@ -121,19 +113,7 @@ public class LoanController {
         log.debug("Getting customer loans via API: {}", customerId);
 
         try {
-            List<LoanDto> loans = getMockLoans();
-            PaginatedResponse<LoanDto> response = PaginatedResponse.<LoanDto>builder()
-                    .content(loans)
-                    .totalElements((long) loans.size())
-                    .totalPages(1)
-                    .size(loans.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            log.debug("Found {} loans for customer via API", loans.size());
-            return ResponseEntity.ok(BaseResponse.success(response));
+            throw new UnsupportedOperationException("Loan service integration required");
             
         } catch (Exception e) {
             log.error("Failed to get customer loans via API: {}", customerId, e);
@@ -208,7 +188,7 @@ public class LoanController {
                     .disbursementAmount(request.getDisbursementAmount())
                     .disbursementDate(LocalDate.now())
                     .targetAccountNumber(request.getTargetAccountNumber())
-                    .transactionReference(generateTransactionReference())
+                    .transactionReference("TXN-" + System.currentTimeMillis()) // Temporary transaction reference
                     .build();
             
             log.info("Loan disbursed successfully via API: {}", loanId);
@@ -242,7 +222,7 @@ public class LoanController {
                     .interestAmount(request.getPaymentAmount().multiply(BigDecimal.valueOf(0.2)))
                     .paymentDate(LocalDate.now())
                     .paymentMethod(request.getPaymentMethod())
-                    .receiptNumber(generateReceiptNumber())
+                    .receiptNumber("RCP-" + System.currentTimeMillis()) // Temporary receipt number
                     .build();
             
             log.info("Loan payment processed successfully via API: {}", loanId);
@@ -265,10 +245,7 @@ public class LoanController {
         log.debug("Getting loan schedule via API: {}", loanId);
 
         try {
-            List<LoanScheduleDto> schedule = generateMockSchedule(Long.parseLong(loanId));
-            
-            return ResponseEntity.ok(BaseResponse.success(schedule));
-            
+            throw new UnsupportedOperationException("Loan service integration required");
         } catch (Exception e) {
             log.error("Failed to get loan schedule via API: {}", loanId, e);
             throw e;
@@ -292,18 +269,7 @@ public class LoanController {
         log.debug("Searching loans via API - Term: {}", searchTerm);
 
         try {
-            List<LoanDto> loans = getMockLoans();
-            PaginatedResponse<LoanDto> response = PaginatedResponse.<LoanDto>builder()
-                    .content(loans)
-                    .totalElements((long) loans.size())
-                    .totalPages(1)
-                    .size(loans.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            throw new UnsupportedOperationException("Loan service integration required");
             
         } catch (Exception e) {
             log.error("Failed to search loans via API", e);

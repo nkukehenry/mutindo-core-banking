@@ -98,10 +98,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private void setBranchContext(JwtClaims claims) {
         BranchContext branchContext = BranchContext.builder()
-                .userId(claims.getUserId())
-                .branchId(claims.getBranchId()) // null for institution admins
+                .userId(Long.parseLong(claims.getUserId()))
+                .branchId(claims.getBranchId() != null ? Long.parseLong(claims.getBranchId()) : null) // null for institution admins
                 .userType(UserType.valueOf(claims.getUserType()))
-                .institutionId("DEFAULT") // Would come from claims in multi-tenant setup
+                .institutionId(1L) // Would come from claims in multi-tenant setup
                 .build();
         
         BranchContextHolder.setContext(branchContext);

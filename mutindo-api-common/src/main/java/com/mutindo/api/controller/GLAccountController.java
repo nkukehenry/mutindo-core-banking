@@ -52,9 +52,9 @@ public class GLAccountController {
             // Use real Chart of Accounts service
             com.mutindo.chartofaccounts.dto.CreateGLAccountRequest serviceRequest = 
                 com.mutindo.chartofaccounts.dto.CreateGLAccountRequest.builder()
-                    .accountCode(request.getAccountCode())
-                    .accountName(request.getAccountName())
-                    .accountType(request.getAccountType())
+                    .code(request.getAccountCode())
+                    .name(request.getAccountName())
+                    .type(request.getAccountType())
                     .parentId(request.getParentId())
                     .description(request.getDescription())
                     .isControlAccount(request.getIsControlAccount())
@@ -227,18 +227,7 @@ public class GLAccountController {
         log.debug("Searching GL accounts via API - Term: {}", searchTerm);
 
         try {
-            List<GLAccountDto> accounts = getMockGLAccounts();
-            PaginatedResponse<GLAccountDto> response = PaginatedResponse.<GLAccountDto>builder()
-                    .content(accounts)
-                    .totalElements((long) accounts.size())
-                    .totalPages(1)
-                    .size(accounts.size())
-                    .number(0)
-                    .first(true)
-                    .last(true)
-                    .build();
-            
-            return ResponseEntity.ok(BaseResponse.success(response));
+            throw new UnsupportedOperationException("GL Account service integration required");
             
         } catch (Exception e) {
             log.error("Failed to search GL accounts via API", e);
@@ -302,15 +291,11 @@ public class GLAccountController {
     // Private helper methods (temporary until real service is available)
 
     private Optional<GLAccountDto> findGLAccountById(Long accountId) {
-        return getMockGLAccounts().stream()
-                .filter(account -> account.getId().equals(accountId))
-                .findFirst();
+        throw new UnsupportedOperationException("GL Account service integration required");
     }
 
     private Optional<GLAccountDto> findGLAccountByCode(String accountCode) {
-        return getMockGLAccounts().stream()
-                .filter(account -> account.getAccountCode().equals(accountCode))
-                .findFirst();
+        throw new UnsupportedOperationException("GL Account service integration required");
     }
 
     /**
@@ -343,7 +328,7 @@ public class GLAccountController {
                 .accountName(serviceDto.getName())
                 .accountType(serviceDto.getType())
                 .level(serviceDto.getLevel())
-                .balance(serviceDto.getBalance())
+                .balance(null) // Balance not available in hierarchy DTO
                 .children(serviceDto.getChildren() != null ? 
                     serviceDto.getChildren().stream()
                         .map(this::convertHierarchyDtoToApiDto)
