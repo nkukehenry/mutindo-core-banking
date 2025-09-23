@@ -113,6 +113,12 @@
             <artifactId>cbs-reporting-service</artifactId>
             <version>${mutindo.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-otp-service</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
 
         <!-- OpenAPI Documentation -->
         <dependency>

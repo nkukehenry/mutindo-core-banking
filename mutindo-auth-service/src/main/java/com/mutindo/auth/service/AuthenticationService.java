@@ -3,6 +3,9 @@ package com.mutindo.auth.service;
 import com.mutindo.auth.dto.*;
 import com.mutindo.auth.dto.*;
 import com.mutindo.auth.mapper.UserMapper;
+import com.mutindo.common.dto.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.mutindo.common.context.BranchContextHolder;
 import com.mutindo.common.enums.UserType;
 import com.mutindo.encryption.service.IEncryptionService; // Reusing existing encryption interface
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Authentication service implementation
@@ -438,5 +442,189 @@ public class AuthenticationService implements IAuthenticationService {
     private void incrementFailedLoginAttempts(User user) {
         user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
         userRepository.save(user);
+    }
+
+    // User CRUD operations (following established patterns)
+
+    /**
+     * Get user by ID
+     */
+    @Override
+    @Cacheable(value = "users", key = "#userId")
+    @PerformanceLog
+    public Optional<UserDto> getUserById(Long userId) {
+        log.debug("Getting user by ID: {}", userId);
+        
+        return userRepository.findById(userId)
+                .map(user -> {
+                    UserDto dto = userMapper.toDto(user);
+                    // Add roles and permissions
+                    dto.setRoles(userRoleService.getUserRoles(userId));
+                    dto.setPermissions(userRoleService.getUserPermissions(userId));
+                    return dto;
+                });
+    }
+
+    /**
+     * Get user by username
+     */
+    @Override
+    @Cacheable(value = "users", key = "#username")
+    @PerformanceLog
+    public Optional<UserDto> getUserByUsername(String username) {
+        log.debug("Getting user by username: {}", username);
+        
+        return userRepository.findByUsername(username)
+                .map(user -> {
+                    UserDto dto = userMapper.toDto(user);
+                    // Add roles and permissions
+                    dto.setRoles(userRoleService.getUserRoles(user.getId()));
+                    dto.setPermissions(userRoleService.getUserPermissions(user.getId()));
+                    return dto;
+                });
+    }
+
+    /**
+     * Update user information
+     */
+    @Override
+    @Transactional
+    @AuditLog
+    @CacheEvict(value = "users", key = "#userId")
+    public UserDto updateUser(Long userId, UpdateUserRequest request) {
+        log.info("Updating user: {}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found", "USER_NOT_FOUND"));
+
+        // Update user fields (following established pattern)
+        updateUserFields(user, request);
+
+        User savedUser = userRepository.save(user);
+        
+        log.info("User updated successfully: {}", userId);
+        return userMapper.toDto(savedUser);
+    }
+
+    /**
+     * Get all users with pagination and filtering
+     */
+    @Override
+    @PerformanceLog
+    public PaginatedResponse<UserDto> getAllUsers(String userType, String branchId, Boolean active, Pageable pageable) {
+        log.debug("Getting all users - Type: {}, Branch: {}, Active: {}", userType, branchId, active);
+
+        // Use existing repository methods (following established pattern)
+        Page<User> userPage;
+        if (branchId != null) {
+            userPage = userRepository.findByBranchIdAndActiveTrue(Long.parseLong(branchId), pageable);
+        } else if (userType != null) {
+            userPage = userRepository.findByUserTypeAndActiveTrue(UserType.valueOf(userType), pageable);
+        } else {
+            userPage = userRepository.findAll(pageable);
+        }
+        
+        List<UserDto> userDtos = userPage.getContent().stream()
+                .map(user -> {
+                    UserDto dto = userMapper.toDto(user);
+                    // Add roles and permissions
+                    dto.setRoles(userRoleService.getUserRoles(user.getId()));
+                    dto.setPermissions(userRoleService.getUserPermissions(user.getId()));
+                    return dto;
+                })
+                .toList();
+
+        return PaginatedResponse.of(userDtos, userPage.getNumber(), userPage.getSize(), userPage.getTotalElements());
+    }
+
+    /**
+     * Search users with pagination
+     */
+    @Override
+    @PerformanceLog
+    public PaginatedResponse<UserDto> searchUsers(String searchTerm, Pageable pageable) {
+        log.debug("Searching users with term: {}", searchTerm);
+
+        Page<User> userPage = userRepository.searchActiveUsers(searchTerm, pageable);
+        
+        List<UserDto> userDtos = userPage.getContent().stream()
+                .map(user -> {
+                    UserDto dto = userMapper.toDto(user);
+                    // Add roles and permissions
+                    dto.setRoles(userRoleService.getUserRoles(user.getId()));
+                    dto.setPermissions(userRoleService.getUserPermissions(user.getId()));
+                    return dto;
+                })
+                .toList();
+
+        return PaginatedResponse.of(userDtos, userPage.getNumber(), userPage.getSize(), userPage.getTotalElements());
+    }
+
+    /**
+     * Deactivate user (soft delete)
+     */
+    @Override
+    @Transactional
+    @AuditLog
+    @CacheEvict(value = "users", key = "#userId")
+    public void deactivateUser(Long userId, String reason) {
+        log.info("Deactivating user: {} - Reason: {}", userId, reason);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found", "USER_NOT_FOUND"));
+
+        user.setActive(false);
+        userRepository.save(user);
+
+        log.info("User deactivated successfully: {}", userId);
+    }
+
+    /**
+     * Activate user
+     */
+    @Override
+    @Transactional
+    @AuditLog
+    @CacheEvict(value = "users", key = "#userId")
+    public void activateUser(Long userId) {
+        log.info("Activating user: {}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found", "USER_NOT_FOUND"));
+
+        user.setActive(true);
+        userRepository.save(user);
+
+        log.info("User activated successfully: {}", userId);
+    }
+
+    // Private helper methods for user operations
+
+    /**
+     * Update user fields from request
+     */
+    private void updateUserFields(User user, UpdateUserRequest request) {
+        if (request.getFirstName() != null) {
+            user.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null) {
+            user.setLastName(request.getLastName());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+        if (request.getUserType() != null) {
+            user.setUserType(request.getUserType());
+        }
+        if (request.getBranchId() != null) {
+            user.setBranchId(Long.parseLong(request.getBranchId()));
+        }
+        if (request.getActive() != null) {
+            user.setActive(request.getActive());
+        }
+        // Notes field not available in User entity
     }
 }

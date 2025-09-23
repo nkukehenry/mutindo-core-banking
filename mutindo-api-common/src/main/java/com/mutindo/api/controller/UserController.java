@@ -1,5 +1,9 @@
 package com.mutindo.api.controller;
 
+import com.mutindo.auth.service.IAuthenticationService;
+import com.mutindo.auth.dto.UserDto;
+import com.mutindo.auth.dto.UserRegistrationRequest;
+import com.mutindo.auth.dto.UpdateUserRequest;
 import com.mutindo.common.dto.BaseResponse;
 import com.mutindo.common.dto.PaginatedResponse;
 import com.mutindo.common.enums.UserType;
@@ -34,8 +38,7 @@ import java.util.Optional;
 @Tag(name = "Users", description = "User management operations")
 public class UserController {
 
-    // TODO: Inject IUserService when available
-    // private final IUserService userService;
+    private final IAuthenticationService authenticationService;
 
     /**
      * Create new user
@@ -49,28 +52,8 @@ public class UserController {
         log.info("Creating user via API - Username: {} - Type: {}", request.getUsername(), request.getUserType());
 
         try {
-            // TODO: Use real service when available
-            UserDto user = UserDto.builder()
-                    .id(System.currentTimeMillis())
-                    .username(request.getUsername())
-                    .email(request.getEmail())
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .phone(request.getPhone())
-                    .userType(request.getUserType())
-                    .branchId(request.getBranchId())
-                    .supervisorId(request.getSupervisorId())
-                    .department(request.getDepartment())
-                    .position(request.getPosition())
-                    .employeeId(request.getEmployeeId())
-                    .active(true)
-                    .emailVerified(false)
-                    .phoneVerified(false)
-                    .mfaEnabled(false)
-                    .mustChangePassword(true)
-                    .failedLoginAttempts(0)
-                    .createdAt(LocalDateTime.now())
-                    .build();
+            // Use real authentication service
+            UserDto user = authenticationService.registerUser(request);
             
             log.info("User created successfully via API: {}", user.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -93,10 +76,15 @@ public class UserController {
         log.debug("Getting user via API: {}", userId);
 
         try {
-            // TODO: Replace with real service call
-            // Long userIdLong = Long.parseLong(userId);
-            // Optional<UserDto> userOpt = userService.getUserById(userIdLong);
-            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
+            Long userIdLong = Long.parseLong(userId);
+            Optional<UserDto> userOpt = authenticationService.getUserById(userIdLong);
+            
+            if (userOpt.isPresent()) {
+                return ResponseEntity.ok(BaseResponse.success(userOpt.get()));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(BaseResponse.error("User not found"));
+            }
             
         } catch (Exception e) {
             log.error("Failed to get user via API: {}", userId, e);
@@ -115,7 +103,15 @@ public class UserController {
         log.debug("Getting user by username via API: {}", username);
 
         try {
-            throw new UnsupportedOperationException("User service integration required");
+            Optional<UserDto> userOpt = authenticationService.getUserByUsername(username);
+            
+            if (userOpt.isPresent()) {
+                return ResponseEntity.ok(BaseResponse.success(userOpt.get()));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(BaseResponse.error("User not found"));
+            }
+            
         } catch (Exception e) {
             log.error("Failed to get user by username via API: {}", username, e);
             throw e;
@@ -138,22 +134,7 @@ public class UserController {
 
         try {
             Long userIdLong = Long.parseLong(userId);
-            UserDto updatedUser = UserDto.builder()
-                    .id(userIdLong)
-                    .username(request.getUsername())
-                    .email(request.getEmail())
-                    .firstName(request.getFirstName())
-                    .lastName(request.getLastName())
-                    .phone(request.getPhone())
-                    .userType(request.getUserType())
-                    .branchId(request.getBranchId())
-                    .supervisorId(request.getSupervisorId())
-                    .department(request.getDepartment())
-                    .position(request.getPosition())
-                    .employeeId(request.getEmployeeId())
-                    .active(request.getActive())
-                    .updatedAt(LocalDateTime.now())
-                    .build();
+            UserDto updatedUser = authenticationService.updateUser(userIdLong, request);
             
             log.info("User updated successfully via API: {}", userId);
             return ResponseEntity.ok(BaseResponse.success(updatedUser, "User updated successfully"));
@@ -181,9 +162,9 @@ public class UserController {
                 userType, branchId, active);
 
         try {
-            // TODO: Replace with real service call
-            // PaginatedResponse<UserDto> response = userService.getAllUsers(userType, branchId, active, pageable);
-            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
+            PaginatedResponse<UserDto> response = authenticationService.getAllUsers(userType, branchId, active, pageable);
+            
+            return ResponseEntity.ok(BaseResponse.success(response));
             
         } catch (Exception e) {
             log.error("Failed to get users via API", e);
@@ -208,9 +189,9 @@ public class UserController {
         log.debug("Searching users via API - Term: {}", searchTerm);
 
         try {
-            // TODO: Replace with real service call
-            // PaginatedResponse<UserDto> response = userService.searchUsers(searchTerm, userType, branchId, active, pageable);
-            throw new UnsupportedOperationException("User service not yet implemented - real database integration required");
+            PaginatedResponse<UserDto> response = authenticationService.searchUsers(searchTerm, pageable);
+            
+            return ResponseEntity.ok(BaseResponse.success(response));
             
         } catch (Exception e) {
             log.error("Failed to search users via API", e);
@@ -232,6 +213,9 @@ public class UserController {
         log.info("Deactivating user via API: {} - Reason: {}", userId, reason);
 
         try {
+            Long userIdLong = Long.parseLong(userId);
+            authenticationService.deactivateUser(userIdLong, reason);
+            
             log.info("User deactivated successfully via API: {}", userId);
             return ResponseEntity.ok(BaseResponse.success(null, "User deactivated successfully"));
             
