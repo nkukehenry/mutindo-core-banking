@@ -10,6 +10,8 @@ A **production-ready**, modular Core Banking System built with Spring Boot, MySQ
 - ✅ **Real Business Services** - Authentication, Customer, Account management
 - ✅ **REST API Endpoints** - Full CRUD operations with database persistence
 - ✅ **Security & Audit** - JWT authentication, role-based access, audit logging
+- ✅ **Swagger UI Integration** - Interactive API documentation at `/swagger-ui/index.html`
+- ✅ **Working Authentication** - Login system fully operational
 - ✅ **Test Data** - Pre-loaded customers, accounts, and transactions
 
 ---
@@ -425,6 +427,7 @@ mvn spring-boot:run
 
 ### **4. Test the System**:
 - **Health Check**: http://localhost:8081/health
+- **Swagger UI**: http://localhost:8081/swagger-ui/index.html
 - **Login**: `POST http://localhost:8081/api/v1/auth/login`
 - **API Testing**: Use `mutindo-application/test-endpoints.rest`
 
@@ -558,7 +561,8 @@ git push origin feature/new-feature-name
 
 ### **✅ COMPLETED & OPERATIONAL**:
 - ✅ **Complete Database Schema** - All tables with numeric auto-increment IDs
-- ✅ **Authentication System** - JWT with database persistence
+- ✅ **Authentication System** - JWT with database persistence and working login
+- ✅ **Swagger UI Integration** - Interactive API documentation and testing
 - ✅ **Customer Management** - Full CRUD with KYC support
 - ✅ **Account Management** - Real balance tracking with product integration
 - ✅ **Multi-Branch Support** - Branch-scoped operations
@@ -591,7 +595,7 @@ git push origin feature/new-feature-name
 - **Security**: JWT, BCrypt, Spring Security
 - **Caching**: Redis (configured, ready to use)
 - **Messaging**: RabbitMQ (configured, ready to use)
-- **Documentation**: OpenAPI/Swagger (configured)
+- **Documentation**: OpenAPI/Swagger (fully integrated and operational)
 - **Build Tool**: Maven 3.8+
 - **ORM**: Hibernate/JPA with optimized queries
 - **Validation**: Bean Validation with custom validators
