@@ -41,8 +41,8 @@ public class PostingController {
     @AuditLog(action = "POST_TRANSACTION", entity = "Transaction")
     @PerformanceLog
     public ResponseEntity<BaseResponse<PostingResult>> postTransaction(@Valid @RequestBody PostingRequest request) {
-        log.info("Transaction posting request via API - Type: {} - Amount: {} - Reference: {}", 
-                request.getTransactionType(), request.getAmount(), request.getReference());
+        log.info("Transaction posting request via API - Type: {} - Entries: {}", 
+                request.getPostingType(), request.getEntries() != null ? request.getEntries().size() : 0);
 
         try {
             // Validate posting request
@@ -57,13 +57,13 @@ public class PostingController {
             
             PostingResult result = postingEngine.postTransaction(request);
             
-            log.info("Transaction posted successfully via API - Reference: {} - Result: {}", 
-                    request.getReference(), result.getStatus());
+            log.info("Transaction posted successfully via API - ID: {} - Result: {}", 
+                    request.getIdempotencyKey(), result.isSuccess());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(BaseResponse.success(result, "Transaction posted successfully"));
             
         } catch (Exception e) {
-            log.error("Failed to post transaction via API - Reference: {}", request.getReference(), e);
+            log.error("Failed to post transaction via API - ID: {}", request.getIdempotencyKey(), e);
             throw e;
         }
     }
@@ -77,8 +77,8 @@ public class PostingController {
     @AuditLog(action = "POST_TRANSACTION_ASYNC", entity = "Transaction")
     @PerformanceLog
     public ResponseEntity<BaseResponse<String>> postTransactionAsync(@Valid @RequestBody PostingRequest request) {
-        log.info("Async transaction posting request via API - Type: {} - Amount: {} - Reference: {}", 
-                request.getTransactionType(), request.getAmount(), request.getReference());
+        log.info("Async transaction posting request via API - Type: {} - Entries: {}", 
+                request.getPostingType(), request.getEntries() != null ? request.getEntries().size() : 0);
 
         try {
             // Validate posting request
@@ -93,12 +93,12 @@ public class PostingController {
             
             CompletableFuture<PostingResult> future = postingEngine.postTransactionAsync(request);
             
-            log.info("Async transaction posting initiated via API - Reference: {}", request.getReference());
+            log.info("Async transaction posting initiated via API - ID: {}", request.getIdempotencyKey());
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body(BaseResponse.success("Transaction posting initiated", "Transaction is being processed asynchronously"));
             
         } catch (Exception e) {
-            log.error("Failed to initiate async transaction posting via API - Reference: {}", request.getReference(), e);
+            log.error("Failed to initiate async transaction posting via API - ID: {}", request.getIdempotencyKey(), e);
             throw e;
         }
     }
@@ -112,18 +112,18 @@ public class PostingController {
     @AuditLog(action = "REVERSE_TRANSACTION", entity = "Transaction")
     @PerformanceLog
     public ResponseEntity<BaseResponse<PostingResult>> reverseTransaction(@Valid @RequestBody ReversalRequest request) {
-        log.info("Transaction reversal request via API - Original Reference: {} - Reason: {}", 
-                request.getOriginalReference(), request.getReason());
+        log.info("Transaction reversal request via API - Original Entry: {} - Reason: {}", 
+                request.getOriginalJournalEntryId(), request.getReversalReason());
 
         try {
             PostingResult result = postingEngine.reverseTransaction(request);
             
-            log.info("Transaction reversed successfully via API - Original Reference: {} - Result: {}", 
-                    request.getOriginalReference(), result.getStatus());
+            log.info("Transaction reversed successfully via API - Original Entry: {} - Result: {}", 
+                    request.getOriginalJournalEntryId(), result.isSuccess());
             return ResponseEntity.ok(BaseResponse.success(result, "Transaction reversed successfully"));
             
         } catch (Exception e) {
-            log.error("Failed to reverse transaction via API - Original Reference: {}", request.getOriginalReference(), e);
+            log.error("Failed to reverse transaction via API - Original Entry: {}", request.getOriginalJournalEntryId(), e);
             throw e;
         }
     }
@@ -136,17 +136,17 @@ public class PostingController {
     @PreAuthorize("hasRole('ROLE_TELLER') or hasRole('ROLE_BRANCH_MANAGER') or hasRole('ROLE_ADMIN')")
     @PerformanceLog
     public ResponseEntity<BaseResponse<Void>> validatePostingRequest(@Valid @RequestBody PostingRequest request) {
-        log.debug("Posting request validation via API - Type: {} - Reference: {}", 
-                request.getTransactionType(), request.getReference());
+        log.debug("Posting request validation via API - Type: {} - ID: {}", 
+                request.getPostingType(), request.getIdempotencyKey());
 
         try {
             postingEngine.validatePostingRequest(request);
             
-            log.debug("Posting request validation successful via API - Reference: {}", request.getReference());
+            log.debug("Posting request validation successful via API - ID: {}", request.getIdempotencyKey());
             return ResponseEntity.ok(BaseResponse.success(null, "Posting request is valid"));
             
         } catch (Exception e) {
-            log.error("Posting request validation failed via API - Reference: {}", request.getReference(), e);
+            log.error("Posting request validation failed via API - ID: {}", request.getIdempotencyKey(), e);
             throw e;
         }
     }

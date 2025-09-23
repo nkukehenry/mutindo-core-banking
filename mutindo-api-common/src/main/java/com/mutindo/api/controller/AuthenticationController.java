@@ -40,16 +40,16 @@ public class AuthenticationController {
     @Operation(summary = "User login", description = "Authenticate user with username/email and password")
     @PerformanceLog
     public ResponseEntity<BaseResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-        log.info("User login attempt via API - Username: {}", request.getUsername());
+        log.info("User login attempt via API - Username: {}", request.getUsernameOrEmail());
 
         try {
             LoginResponse response = authenticationService.authenticateUser(request);
             
-            log.info("User login successful via API - User: {}", request.getUsername());
+            log.info("User login successful via API - User: {}", request.getUsernameOrEmail());
             return ResponseEntity.ok(BaseResponse.success(response, "Login successful"));
             
         } catch (Exception e) {
-            log.error("Failed to login user via API: {}", request.getUsername(), e);
+            log.error("Failed to login user via API: {}", request.getUsernameOrEmail(), e);
             throw e;
         }
     }
@@ -206,7 +206,7 @@ public class AuthenticationController {
         log.debug("User validation request via API - User: {}", userId);
 
         try {
-            boolean isValid = authenticationService.validateUser(userId);
+            boolean isValid = authenticationService.isUserValid(userId);
             
             log.debug("User validation completed via API - User: {} - Valid: {}", userId, isValid);
             return ResponseEntity.ok(BaseResponse.success(isValid, "User validation completed"));

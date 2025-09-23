@@ -66,7 +66,7 @@ public class OtpController {
             OtpResponse response = otpService.verifyOtp(request);
             
             log.info("OTP verification completed via API - Phone: {} - Valid: {}", 
-                    request.getPhoneNumber(), response.isValid());
+                    request.getPhoneNumber(), response.isSuccess());
             return ResponseEntity.ok(BaseResponse.success(response, "OTP verification completed"));
             
         } catch (Exception e) {

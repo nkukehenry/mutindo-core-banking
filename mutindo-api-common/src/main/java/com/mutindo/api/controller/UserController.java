@@ -12,8 +12,6 @@ import com.mutindo.logging.annotation.PerformanceLog;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.Builder;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,7 +44,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_MANAGER')")
     @AuditLog(action = "CREATE_USER", entity = "User")
     @PerformanceLog
-    public ResponseEntity<BaseResponse<UserDto>> createUser(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<BaseResponse<UserDto>> createUser(@Valid @RequestBody UserRegistrationRequest request) {
         log.info("Creating user via API - Username: {} - Type: {}", request.getUsername(), request.getUserType());
 
         try {
@@ -288,69 +284,5 @@ public class UserController {
         }
     }
 
-    // All mock data removed - real user service implementation required
-
-    // DTOs for User operations
-
-    @Data
-    @Builder
-    public static class UserDto {
-        private Long id;
-        private String username;
-        private String email;
-        private String firstName;
-        private String lastName;
-        private String phone;
-        private UserType userType;
-        private Long branchId;
-        private Long supervisorId;
-        private String department;
-        private String position;
-        private String employeeId;
-        private Boolean active;
-        private Boolean emailVerified;
-        private Boolean phoneVerified;
-        private Boolean mfaEnabled;
-        private Boolean mustChangePassword;
-        private Integer failedLoginAttempts;
-        private LocalDateTime lastLoginAt;
-        private LocalDateTime passwordChangedAt;
-        private LocalDateTime lockedUntil;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-    }
-
-    @Data
-    @Builder
-    public static class CreateUserRequest {
-        private String username;
-        private String email;
-        private String firstName;
-        private String lastName;
-        private String phone;
-        private UserType userType;
-        private Long branchId;
-        private Long supervisorId;
-        private String department;
-        private String position;
-        private String employeeId;
-        private String initialPassword;
-    }
-
-    @Data
-    @Builder
-    public static class UpdateUserRequest {
-        private String username;
-        private String email;
-        private String firstName;
-        private String lastName;
-        private String phone;
-        private UserType userType;
-        private Long branchId;
-        private Long supervisorId;
-        private String department;
-        private String position;
-        private String employeeId;
-        private Boolean active;
-    }
+    // All mock data removed - using real DTOs from auth service
 }
