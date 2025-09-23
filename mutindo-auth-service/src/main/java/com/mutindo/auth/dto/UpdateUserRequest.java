@@ -3,14 +3,18 @@ package com.mutindo.auth.dto;
 import com.mutindo.common.enums.UserType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Request DTO for updating user information
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserRequest {
     
     @Size(max = 100, message = "First name must be at most 100 characters")

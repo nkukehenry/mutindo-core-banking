@@ -27,9 +27,10 @@ import java.util.Optional;
  * Product REST API controller
  * Complete CRUD operations for banking product management
  */
-@RestController
+// Temporarily disabled until IProductService is implemented
+// @RestController
 @RequestMapping("/api/v1/products")
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Products", description = "Banking product management operations")
 public class ProductController {

@@ -98,10 +98,31 @@
             <version>${mutindo.version}</version>
         </dependency>
         
+        <!-- API Common - Controllers and API components -->
+        <dependency>
+            <groupId>com.mutindo</groupId>
+            <artifactId>cbs-api-common</artifactId>
+            <version>${mutindo.version}</version>
+        </dependency>
+        
         <!-- Fix logging issues -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        
+        <!-- OpenAPI Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        
+        <!-- Email Support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
 

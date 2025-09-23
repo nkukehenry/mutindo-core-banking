@@ -14,7 +14,7 @@ INSERT INTO branches (branch_code, branch_name, address, phone, email, is_head_o
 -- =============================================================================
 -- USERS DATA (Default Admin Users)
 -- =============================================================================
--- Password for all users is "Admin!2025" - hashed with BCrypt
+-- Password for all users is "Admin!2025" - hashed with BCrypt using at.favre.lib.crypto.bcrypt.BCrypt
 INSERT INTO users (username, email, password_hash, first_name, last_name, phone, user_type, branch_id, active, created_by) VALUES
 ('admin', 'admin@mutindo.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqfcx.zcx4RgTZ.F5jKjK4e', 'System', 'Administrator', '+256700111111', 'SUPER_ADMIN', NULL, TRUE, 'SYSTEM'),
 ('manager1', 'manager1@mutindo.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqfcx.zcx4RgTZ.F5jKjK4e', 'John', 'Mutindo', '+256700222222', 'BRANCH_MANAGER', 2, TRUE, 'SYSTEM'),

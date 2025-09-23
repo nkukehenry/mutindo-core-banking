@@ -1,13 +1,17 @@
 package com.mutindo.account.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Account search request DTO - small and focused search criteria
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AccountSearchRequest {
     
     private String searchTerm; // Account number, customer name, product code

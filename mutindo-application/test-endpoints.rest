@@ -1,7 +1,8 @@
 ###
 # Mutindo Core Banking System - Comprehensive API Testing
-# REST Client file for testing all endpoints with complete CRUD operations
-# Real database integration with enterprise-grade features
+# REST Client file for testing ALL available endpoints across all microservices
+# Complete CRUD operations with real database integration
+# Enterprise-grade features with audit logging and performance monitoring
 # Run each request by clicking the "Send Request" link above each request
 ###
 
@@ -928,13 +929,734 @@ Authorization: {{authToken}}
 }
 
 ###############################################################################
+# 19. POSTING ENGINE ENDPOINTS
+###############################################################################
+
+### Post Transaction Synchronously
+POST {{baseUrl}}/api/v1/posting/post
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "idempotencyKey": "test-posting-123",
+  "postingType": "DEPOSIT",
+  "sourceType": "TRANSACTION",
+  "sourceId": 1,
+  "branchId": 2,
+  "userId": 1,
+  "postingDate": "2024-01-15",
+  "narration": "Test deposit posting",
+  "currency": "UGX",
+  "entries": [
+    {
+      "glAccountCode": "1010",
+      "debitAmount": 100000,
+      "creditAmount": 0,
+      "narration": "Cash deposit",
+      "branchId": 2
+    }
+  ]
+}
+
+### Post Transaction Asynchronously
+POST {{baseUrl}}/api/v1/posting/post-async
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "idempotencyKey": "test-async-posting-456",
+  "postingType": "WITHDRAWAL",
+  "sourceType": "TRANSACTION",
+  "sourceId": 2,
+  "branchId": 2,
+  "userId": 1,
+  "postingDate": "2024-01-15",
+  "narration": "Test withdrawal posting",
+  "currency": "UGX",
+  "entries": [
+    {
+      "glAccountCode": "2010",
+      "debitAmount": 0,
+      "creditAmount": 50000,
+      "narration": "Cash withdrawal",
+      "branchId": 2
+    }
+  ]
+}
+
+### Reverse Transaction
+POST {{baseUrl}}/api/v1/posting/reverse
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "originalJournalEntryId": 1,
+  "reversalReason": "Error correction",
+  "reversalDate": "2024-01-15",
+  "narration": "Transaction reversal"
+}
+
+### Validate Posting Request
+POST {{baseUrl}}/api/v1/posting/validate
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "idempotencyKey": "test-validation-789",
+  "postingType": "DEPOSIT",
+  "sourceType": "TRANSACTION",
+  "sourceId": 3,
+  "branchId": 2,
+  "userId": 1,
+  "postingDate": "2024-01-15",
+  "narration": "Test validation",
+  "currency": "UGX",
+  "entries": [
+    {
+      "glAccountCode": "1010",
+      "debitAmount": 25000,
+      "creditAmount": 0,
+      "narration": "Validation test",
+      "branchId": 2
+    }
+  ]
+}
+
+### Check Idempotency
+GET {{baseUrl}}/api/v1/posting/check-idempotency?idempotencyKey=test-posting-123
+Authorization: {{authToken}}
+
+###############################################################################
+# 20. REPORTING SERVICE ENDPOINTS
+###############################################################################
+
+### Generate Report
+POST {{baseUrl}}/api/v1/reports/generate
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "reportCode": "CUSTOMER_SUMMARY",
+  "outputFormat": "PDF",
+  "parameters": {
+    "branchId": 2,
+    "dateFrom": "2024-01-01",
+    "dateTo": "2024-01-31"
+  }
+}
+
+### Get Report Execution by ID
+GET {{baseUrl}}/api/v1/reports/executions/1
+Authorization: {{authToken}}
+
+### Get Report Executions by Definition
+GET {{baseUrl}}/api/v1/reports/definitions/1/executions?page=0&size=10
+Authorization: {{authToken}}
+
+### Get User Report Executions
+GET {{baseUrl}}/api/v1/reports/executions/user/admin?page=0&size=10
+Authorization: {{authToken}}
+
+### Cancel Report Execution
+POST {{baseUrl}}/api/v1/reports/executions/1/cancel
+Authorization: {{authToken}}
+
+### Get Report Definition by Code
+GET {{baseUrl}}/api/v1/reports/definitions/code/CUSTOMER_SUMMARY
+Authorization: {{authToken}}
+
+### Get Report Definition by ID
+GET {{baseUrl}}/api/v1/reports/definitions/1
+Authorization: {{authToken}}
+
+### Create Report Definition
+POST {{baseUrl}}/api/v1/reports/definitions
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "reportCode": "ACCOUNT_BALANCE",
+  "reportName": "Account Balance Report",
+  "description": "Report showing account balances by branch",
+  "category": "FINANCIAL",
+  "outputFormats": ["PDF", "EXCEL"],
+  "parameters": [
+    {
+      "name": "branchId",
+      "type": "LONG",
+      "required": true,
+      "description": "Branch ID filter"
+    }
+  ],
+  "isPublic": false,
+  "active": true
+}
+
+### Update Report Definition
+PUT {{baseUrl}}/api/v1/reports/definitions/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "reportCode": "ACCOUNT_BALANCE",
+  "reportName": "Updated Account Balance Report",
+  "description": "Updated report showing account balances by branch",
+  "category": "FINANCIAL",
+  "outputFormats": ["PDF", "EXCEL", "CSV"],
+  "isPublic": true,
+  "active": true
+}
+
+### Get Report Definitions by Category
+GET {{baseUrl}}/api/v1/reports/definitions/category/FINANCIAL
+Authorization: {{authToken}}
+
+### Get Public Report Definitions
+GET {{baseUrl}}/api/v1/reports/definitions/public
+Authorization: {{authToken}}
+
+### Get All Report Definitions
+GET {{baseUrl}}/api/v1/reports/definitions?active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Deactivate Report Definition
+DELETE {{baseUrl}}/api/v1/reports/definitions/1?reason=No longer needed
+Authorization: {{authToken}}
+
+###############################################################################
+# 21. OTP SERVICE ENDPOINTS
+###############################################################################
+
+### Generate OTP
+POST {{baseUrl}}/api/v1/otp/generate
+Content-Type: {{contentType}}
+
+{
+  "phoneNumber": "+256700123456",
+  "purpose": "LOGIN",
+  "expiryMinutes": 5
+}
+
+### Verify OTP
+POST {{baseUrl}}/api/v1/otp/verify
+Content-Type: {{contentType}}
+
+{
+  "phoneNumber": "+256700123456",
+  "otpCode": "123456",
+  "purpose": "LOGIN"
+}
+
+### Resend OTP
+POST {{baseUrl}}/api/v1/otp/resend?phoneNumber=+256700123456
+
+### Invalidate OTP
+POST {{baseUrl}}/api/v1/otp/invalidate?phoneNumber=+256700123456
+Authorization: {{authToken}}
+
+### Validate OTP
+GET {{baseUrl}}/api/v1/otp/validate?phoneNumber=+256700123456&otpCode=123456
+
+###############################################################################
+# 22. SYSTEM CONFIGURATION ENDPOINTS
+###############################################################################
+
+### Create System Configuration
+POST {{baseUrl}}/api/v1/system-configurations
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "configKey": "MAX_LOGIN_ATTEMPTS",
+  "configValue": "5",
+  "description": "Maximum number of login attempts before account lockout",
+  "category": "SECURITY",
+  "dataType": "INTEGER",
+  "environment": "PRODUCTION",
+  "isSystem": true,
+  "isEncrypted": false,
+  "active": true
+}
+
+### Get System Configuration by Key
+GET {{baseUrl}}/api/v1/system-configurations/key/MAX_LOGIN_ATTEMPTS
+Authorization: {{authToken}}
+
+### Get System Configuration by ID
+GET {{baseUrl}}/api/v1/system-configurations/1
+Authorization: {{authToken}}
+
+### Update System Configuration
+PUT {{baseUrl}}/api/v1/system-configurations/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "configKey": "MAX_LOGIN_ATTEMPTS",
+  "configValue": "3",
+  "description": "Updated maximum number of login attempts",
+  "category": "SECURITY",
+  "dataType": "INTEGER",
+  "environment": "PRODUCTION",
+  "isSystem": true,
+  "isEncrypted": false,
+  "active": true
+}
+
+### Get System Configurations by Category
+GET {{baseUrl}}/api/v1/system-configurations/category/SECURITY
+Authorization: {{authToken}}
+
+### Get System Configurations by Environment
+GET {{baseUrl}}/api/v1/system-configurations/environment/PRODUCTION
+Authorization: {{authToken}}
+
+### Get System Configurations (isSystem = true)
+GET {{baseUrl}}/api/v1/system-configurations/system
+Authorization: {{authToken}}
+
+### Get All System Configurations
+GET {{baseUrl}}/api/v1/system-configurations?active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Deactivate System Configuration
+DELETE {{baseUrl}}/api/v1/system-configurations/1?reason=No longer needed
+Authorization: {{authToken}}
+
+###############################################################################
+# 23. BUSINESS SETTINGS ENDPOINTS
+###############################################################################
+
+### Create Business Setting
+POST {{baseUrl}}/api/v1/business-settings
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "settingKey": "DEFAULT_CURRENCY",
+  "settingValue": "UGX",
+  "description": "Default currency for the institution",
+  "category": "GENERAL",
+  "settingType": "STRING",
+  "isPublic": true,
+  "active": true
+}
+
+### Get Business Setting by Key
+GET {{baseUrl}}/api/v1/business-settings/key/DEFAULT_CURRENCY
+Authorization: {{authToken}}
+
+### Get Business Setting by ID
+GET {{baseUrl}}/api/v1/business-settings/1
+Authorization: {{authToken}}
+
+### Update Business Setting
+PUT {{baseUrl}}/api/v1/business-settings/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "settingKey": "DEFAULT_CURRENCY",
+  "settingValue": "USD",
+  "description": "Updated default currency for the institution",
+  "category": "GENERAL",
+  "settingType": "STRING",
+  "isPublic": true,
+  "active": true
+}
+
+### Get Business Settings by Type
+GET {{baseUrl}}/api/v1/business-settings/type/STRING
+Authorization: {{authToken}}
+
+### Get Business Settings by Category
+GET {{baseUrl}}/api/v1/business-settings/category/GENERAL
+Authorization: {{authToken}}
+
+### Get Public Business Settings
+GET {{baseUrl}}/api/v1/business-settings/public
+Authorization: {{authToken}}
+
+### Get All Business Settings
+GET {{baseUrl}}/api/v1/business-settings?active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Deactivate Business Setting
+DELETE {{baseUrl}}/api/v1/business-settings/1?reason=No longer needed
+Authorization: {{authToken}}
+
+###############################################################################
+# 24. ENHANCED AUTHENTICATION ENDPOINTS
+###############################################################################
+
+### Register New User (Admin Only)
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "username": "newuser",
+  "email": "newuser@mutindo.com",
+  "firstName": "New",
+  "lastName": "User",
+  "phone": "+256-700-999888",
+  "userType": "TELLER",
+  "branchId": 2,
+  "supervisorId": 2,
+  "department": "Customer Service",
+  "position": "Junior Teller",
+  "employeeId": "EMP004",
+  "initialPassword": "TempPass123!"
+}
+
+### Change User Password
+POST {{baseUrl}}/api/v1/auth/change-password?userId=1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "currentPassword": "Admin!2025",
+  "newPassword": "NewPassword123!",
+  "confirmPassword": "NewPassword123!"
+}
+
+### Lock User Account
+POST {{baseUrl}}/api/v1/auth/lock-user?userId=3&reason=Security violation
+Authorization: {{authToken}}
+
+### Unlock User Account
+POST {{baseUrl}}/api/v1/auth/unlock-user?userId=3
+Authorization: {{authToken}}
+
+### Logout User
+POST {{baseUrl}}/api/v1/auth/logout?userId=1&accessToken=YOUR_ACCESS_TOKEN
+Authorization: {{authToken}}
+
+### Validate User Authentication
+GET {{baseUrl}}/api/v1/auth/validate?userId=1
+Authorization: {{authToken}}
+
+### Refresh Access Token
+POST {{baseUrl}}/api/v1/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "YOUR_REFRESH_TOKEN"
+}
+
+###############################################################################
+# 25. ENHANCED USER MANAGEMENT ENDPOINTS
+###############################################################################
+
+### Get All Users with Filters
+GET {{baseUrl}}/api/v1/users?userType=TELLER&branchId=2&active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Search Users
+GET {{baseUrl}}/api/v1/users/search?searchTerm=teller&userType=TELLER&branchId=2&active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Deactivate User
+DELETE {{baseUrl}}/api/v1/users/3?reason=Employee termination
+Authorization: {{authToken}}
+
+### Reset User Password
+PATCH {{baseUrl}}/api/v1/users/3/reset-password
+Authorization: {{authToken}}
+
+### Lock User Account
+PATCH {{baseUrl}}/api/v1/users/3/lock?reason=Security violation
+Authorization: {{authToken}}
+
+### Unlock User Account
+PATCH {{baseUrl}}/api/v1/users/3/unlock
+Authorization: {{authToken}}
+
+###############################################################################
+# 26. ENHANCED CUSTOMER ENDPOINTS
+###############################################################################
+
+### Get All Customers with Pagination
+GET {{baseUrl}}/api/v1/customers?page=0&size=20
+Authorization: {{authToken}}
+
+### Search Customers with Advanced Filters
+GET {{baseUrl}}/api/v1/customers/search?searchTerm=Mutindo&customerType=INDIVIDUAL&branchId=2&kycStatus=VERIFIED&active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Deactivate Customer
+DELETE {{baseUrl}}/api/v1/customers/1?reason=Customer request
+Authorization: {{authToken}}
+
+### Update Customer KYC Status
+PATCH {{baseUrl}}/api/v1/customers/1/kyc?kycStatus=VERIFIED
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "documents": {
+    "nationalId": "verified",
+    "proofOfAddress": "verified",
+    "passport": "pending"
+  }
+}
+
+### Check Customer Existence by National ID
+GET {{baseUrl}}/api/v1/customers/exists/national-id/CM12345678901234
+Authorization: {{authToken}}
+
+###############################################################################
+# 27. ENHANCED ACCOUNT ENDPOINTS
+###############################################################################
+
+### Get All Accounts with Pagination
+GET {{baseUrl}}/api/v1/accounts?page=0&size=20
+Authorization: {{authToken}}
+
+### Get Account by Account Number
+GET {{baseUrl}}/api/v1/accounts/number/ACC001
+Authorization: {{authToken}}
+
+### Get Customer Accounts
+GET {{baseUrl}}/api/v1/accounts/customer/1?page=0&size=20
+Authorization: {{authToken}}
+
+### Search Accounts with Advanced Filters
+GET {{baseUrl}}/api/v1/accounts/search?searchTerm=savings&customerId=1&productCode=SAV001&branchId=2&status=ACTIVE&currency=UGX&active=true&page=0&size=20
+Authorization: {{authToken}}
+
+### Close Account
+DELETE {{baseUrl}}/api/v1/accounts/1?reason=Customer request
+Authorization: {{authToken}}
+
+### Freeze Account
+PATCH {{baseUrl}}/api/v1/accounts/1/freeze?reason=Suspicious activity
+Authorization: {{authToken}}
+
+### Unfreeze Account
+PATCH {{baseUrl}}/api/v1/accounts/1/unfreeze
+Authorization: {{authToken}}
+
+###############################################################################
+# 28. ENHANCED TRANSACTION ENDPOINTS
+###############################################################################
+
+### Process Deposit with Real Posting Engine
+POST {{baseUrl}}/api/v1/transactions/deposits
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountNumber": "ACC001",
+  "amount": 100000,
+  "currency": "UGX",
+  "narration": "Cash deposit via API"
+}
+
+### Process Withdrawal with Real Posting Engine
+POST {{baseUrl}}/api/v1/transactions/withdrawals
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "accountNumber": "ACC001",
+  "amount": 50000,
+  "currency": "UGX",
+  "narration": "Cash withdrawal via API"
+}
+
+### Test Posting Engine Directly
+POST {{baseUrl}}/api/v1/transactions/test-posting
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "idempotencyKey": "test-123-456",
+  "postingType": "DEPOSIT",
+  "sourceType": "TRANSACTION",
+  "sourceId": 1,
+  "branchId": 2,
+  "userId": 1,
+  "postingDate": "2024-01-15",
+  "narration": "Test posting via API",
+  "currency": "UGX",
+  "entries": [
+    {
+      "glAccountCode": "1010",
+      "debitAmount": 100000,
+      "creditAmount": 0,
+      "narration": "Cash deposit - debit cash account",
+      "branchId": 2
+    }
+  ]
+}
+
+###############################################################################
+# 29. ENHANCED LOAN ENDPOINTS
+###############################################################################
+
+### Get All Loans with Pagination
+GET {{baseUrl}}/api/v1/loans?page=0&size=10
+Authorization: {{authToken}}
+
+### Get Customer Loans
+GET {{baseUrl}}/api/v1/loans/customer/1?page=0&size=20
+Authorization: {{authToken}}
+
+### Approve Loan
+PATCH {{baseUrl}}/api/v1/loans/1/approve?approvedAmount=3000000&comments=Approved after verification
+Authorization: {{authToken}}
+
+### Reject Loan
+PATCH {{baseUrl}}/api/v1/loans/2/reject?reason=Insufficient collateral
+Authorization: {{authToken}}
+
+### Disburse Loan
+POST {{baseUrl}}/api/v1/loans/1/disburse
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "disbursementAmount": 3000000,
+  "targetAccountNumber": "ACC001",
+  "disbursementMethod": "BANK_TRANSFER"
+}
+
+### Make Loan Payment
+POST {{baseUrl}}/api/v1/loans/1/payments
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "paymentAmount": 200000,
+  "paymentMethod": "CASH",
+  "remarks": "Monthly installment payment"
+}
+
+### Get Loan Repayment Schedule
+GET {{baseUrl}}/api/v1/loans/1/schedule
+Authorization: {{authToken}}
+
+### Search Loans
+GET {{baseUrl}}/api/v1/loans/search?searchTerm=business&status=ACTIVE&customerId=1&branchId=2&page=0&size=20
+Authorization: {{authToken}}
+
+###############################################################################
+# 30. ENHANCED CUSTOM FIELDS ENDPOINTS
+###############################################################################
+
+### Get Custom Field Definitions for Entity Type
+GET {{baseUrl}}/api/v1/custom-fields/definitions/CUSTOMER
+Authorization: {{authToken}}
+
+### Create Custom Field Definition
+POST {{baseUrl}}/api/v1/custom-fields/definitions
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "code": "preferred_language",
+  "label": "Preferred Language",
+  "dataType": "SELECT",
+  "validation": {
+    "required": false
+  },
+  "visibility": "PUBLIC",
+  "branchScope": "ALL",
+  "uiHint": "DROPDOWN",
+  "isIndexed": true,
+  "required": false,
+  "sortOrder": 10,
+  "options": {
+    "options": ["English", "Luganda", "Swahili", "Runyankole"]
+  }
+}
+
+### Update Custom Field Definition
+PUT {{baseUrl}}/api/v1/custom-fields/definitions/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "code": "emergency_contact",
+  "label": "Emergency Contact Person",
+  "dataType": "TEXT",
+  "validation": {
+    "required": true,
+    "maxLength": 150
+  },
+  "visibility": "PUBLIC",
+  "branchScope": "ALL",
+  "uiHint": "TEXTBOX",
+  "isIndexed": true,
+  "required": true,
+  "sortOrder": 1,
+  "active": true
+}
+
+### Set Custom Field Values for Entity
+PUT {{baseUrl}}/api/v1/custom-fields/values/CUSTOMER/1
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "emergency_contact": "Mary Mutindo - +256-700-555123",
+  "preferred_language": "English",
+  "risk_category": "LOW",
+  "credit_score": 780,
+  "special_instructions": "VIP customer - handle with priority"
+}
+
+### Get Custom Field Values for Entity
+GET {{baseUrl}}/api/v1/custom-fields/values/CUSTOMER/1
+Authorization: {{authToken}}
+
+### Search Entities by Custom Fields
+POST {{baseUrl}}/api/v1/custom-fields/search
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "entityType": "CUSTOMER",
+  "fieldValues": {
+    "risk_category": "HIGH",
+    "credit_score": 650
+  },
+  "searchOperator": "AND"
+}
+
+### Validate Custom Field Value
+POST {{baseUrl}}/api/v1/custom-fields/validate
+Content-Type: {{contentType}}
+Authorization: {{authToken}}
+
+{
+  "fieldCode": "emergency_contact",
+  "entityType": "CUSTOMER",
+  "value": "John Doe - +256-700-123456"
+}
+
+### Get Custom Field Statistics
+GET {{baseUrl}}/api/v1/custom-fields/statistics/CUSTOMER
+Authorization: {{authToken}}
+
+###############################################################################
 # NOTES:
-# - All endpoints now support complete CRUD operations
+# - ALL endpoints now support complete CRUD operations across all microservices
 # - Authentication required for most endpoints (use JWT token)
-# - Real database integration with audit logging
-# - Custom fields system supports any entity type
-# - Enhanced search and filtering capabilities
-# - Complete loan lifecycle management
-# - Multi-level chart of accounts support
+# - Real database integration with audit logging and performance monitoring
+# - Custom fields system supports any entity type with dynamic validation
+# - Enhanced search and filtering capabilities with pagination
+# - Complete loan lifecycle management with approval workflows
+# - Multi-level chart of accounts support with hierarchical structure
 # - Enterprise-grade validation and error handling
+# - Posting engine with double-entry bookkeeping and transaction reversal
+# - Comprehensive reporting system with multiple output formats
+# - OTP service for secure authentication and verification
+# - System configuration and business settings management
+# - Complete user management with role-based access control
+# - Advanced transaction processing with real-time posting
+# - Custom field definitions and values for dynamic data management
 ###############################################################################

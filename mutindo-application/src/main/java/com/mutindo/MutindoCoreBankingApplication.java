@@ -17,7 +17,7 @@ import java.util.Map;
  * Main Spring Boot application for Mutindo Core Banking System
  * Full integration with database and business services
  */
-@SpringBootApplication(scanBasePackages = {"com.mutindo", "com.mutindo"})
+@SpringBootApplication(scanBasePackages = {"com.mutindo", "com.mutindo.api"})
 @PropertySource("classpath:system.properties")
 @RestController
 @EntityScan(basePackages = "com.mutindo.entities")
@@ -33,6 +33,8 @@ public class MutindoCoreBankingApplication {
         System.out.println("🌐 Access the application at: http://localhost:8081");
         System.out.println("📊 Health check: http://localhost:8081/health");
         System.out.println("ℹ️  Application info: http://localhost:8081/actuator/info");
+        System.out.println("📚 API Documentation: http://localhost:8081/swagger-ui.html");
+        System.out.println("🔧 API Docs (JSON): http://localhost:8081/api-docs");
     }
 
     @GetMapping("/health")
@@ -64,7 +66,9 @@ public class MutindoCoreBankingApplication {
             "endpoints", Map.of(
                 "health", "/health",
                 "info", "/info",
-                "actuator", "/actuator/health"
+                "actuator", "/actuator/health",
+                "swagger-ui", "/swagger-ui.html",
+                "api-docs", "/api-docs"
             )
         );
     }

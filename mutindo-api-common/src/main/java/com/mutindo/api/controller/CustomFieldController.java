@@ -29,9 +29,10 @@ import java.util.Optional;
  * Custom Field REST API controller
  * Manages dynamic field definitions and values for all entity types
  */
-@RestController
+// Temporarily disabled until ICustomFieldService is implemented
+// @RestController
 @RequestMapping("/api/v1/custom-fields")
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Custom Fields", description = "Dynamic field management for all entities")
 public class CustomFieldController {

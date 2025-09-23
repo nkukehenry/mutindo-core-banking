@@ -28,9 +28,10 @@ import java.util.Optional;
  * Loan REST API controller
  * Complete loan lifecycle management
  */
-@RestController
+// Temporarily disabled until ILoanService is implemented
+// @RestController
 @RequestMapping("/api/v1/loans")
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Loans", description = "Loan management operations")
 public class LoanController {
